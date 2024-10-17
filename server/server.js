@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "client", "index.html"));
+  res.sendFile(path.join(__dirname, "..", "client", "index.html"));
 });
 
 app.get("/res", (req, res) => {
@@ -26,4 +26,3 @@ app.get("/res", (req, res) => {
 app.listen(3000, () => {
   console.log("Server listening on port 3000");
 });
-//fuck 
