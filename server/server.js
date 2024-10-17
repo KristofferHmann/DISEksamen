@@ -4,7 +4,7 @@ const path = require("path");
 const app = express();
 
 app.use(cors());
-app.use("/static", express.static("public"));
+app.use("/static", express.static("client"));
 app.use((req, res, next) => {
     console.log("----- HTTP Request -----");
     console.log(`Method: ${req.method}`); // HTTP Method
@@ -16,7 +16,7 @@ app.use((req, res, next) => {
 });
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "client", "index.html"));
 });
 
 app.get("/res", (req, res) => {
