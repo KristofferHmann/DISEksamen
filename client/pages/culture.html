@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="./static/styles/global.css">
+  <title>JOE and The Juice</title>
+</head>
+
+<body>
+  <ul>
+    <li><img src="./static/img/joeLogo.svg" alt="Logo"></li>
+    <li><a href="/">Home</a></li>
+    <li style="float:right" class="active"><a href="/">Culture</a></li>
+    <li style="float:right"><a href="/locations">Locations</a></li>
+    <li style="float:right"><a href="/">Menu</a></li>
+  </ul>
+  <div class="center">
+    <h1>Response time for Node.js servers</h1>
+    <p>This module creates a middleware that records the response time for requests in HTTP servers and adds a
+        X-Response-Time header to responses.</p>
+    <p>"response time" is defined here as the elapsed time from when a request enters this middleware to when the
+        headers are written out to the client.</p>
+    <p>npm install response-time (<a href="https://www.npmjs.com/package/response-time" target="_blank">link</a>).</p>
+    <img src="/culture/image" alt="Image">
+    <br />
+    <p>The X-Response-Time header value will be displayed here:</p>
+    <p id="responseTimeValue"></p>
+    <p>Cache-Control header is set to prevent caching.</p>
+  </div>
+</body>
+
+<script src="./static/scripts/index.js"></script>
+
+</html>
