@@ -182,4 +182,15 @@ app.get('/culture/image', (req, res) => {
 app.listen(3000, () => {
   console.log("Server listening on port 3000");
 });
-//pik
+
+//login endpoint
+app.get('/login/', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+  res.sendFile(path.join(__dirname, "client/pages", "login.html"));
+});
+
+//signup endpoint
+app.get('/signup/', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+  res.sendFile(path.join(__dirname, "client/pages", "signup.html"));
+});
