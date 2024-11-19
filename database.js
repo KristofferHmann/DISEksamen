@@ -1,7 +1,10 @@
 const sqlite3 = require('sqlite3').verbose();
-const fs = require('fs');   
+const fs = require('fs');
+
 const database = new sqlite3.Database('./database/db.sqlite');
 
+
+// Run SQL script
 const runSQLScript = (filename) => {
   const script = fs.readFileSync(filename, 'utf8');
   database.exec(script, (err) => {
@@ -17,23 +20,33 @@ database.serialize(() => {
   runSQLScript('./client/scripts/user.sql');
 } );
 
-module.exports = database;
 
-async function signupUser(data) {
-    try {
-     await this.connect();
-        const request = this.poolconnection.request();
 
-    request.input('username', sql.VarChar, data.username)
-    request.input('password', sql.VarChar, data.password)
-    request.input('email', sql.VarChar, data.email)         
-    request.input('phone', sql.VarChar, data.phone)
-    request.input('timeCreated', sql.VarChar, data.timeCreated)
+class Database {
+//Lav en bruger
+async signupUser(data) {
+  return new Promise((resolve, reject) => {
+    const { username, password, email, phonenumber, created_at } = data;
+    const query = `INSERT INTO users (username, password, email, phonenumber, created_at) VALUES (@username, @password, @email, @phonenumber, @created_at)`;
+    const params = {
+      '@username': username,
+      '@password': password,
+      '@email': email,
+      '@phonenumber': phonenumber,
+      '@created_at': created_at
+    };
+    database.run(query, params, function (err) {
+      if (err) {
+        console.error("Fejl ved registrering af bruger", err.message);
+        reject(err);
+      } else {
+        resolve(this.lastID); // Return the ID of the newly created user
+      }
+    });
+  });
+}
 
-  const result = await request.query(
-    'INSERT INTO users (username, password, email, phone, timeCreated) VALUES (@username, @password, @email, @phone, @timeCreated)');
-    return result.rowsAffected[0];
-  } catch (error) {
-    console.error("Fejl ved registering af bruger", error.message); 
-    throw error;
- }};
+}
+
+
+module.exports = new Database();

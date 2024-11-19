@@ -4,6 +4,8 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const nodemailer = require("nodemailer");
 const responseTime = require('response-time')
+const router = require('./routes.js');
+
 const app = express();
 
 app.use(cors());
@@ -20,7 +22,10 @@ app.use((req, res, next) => {
 app.use(cookieParser());
 app.use(express.json());
 app.use(responseTime())
+app.use('/', router);
 
+// Opgave 1: Lav et POST /login endpoint der tager imod brugernavn og adgangskode
+//Dette information skal ind i en .env fil
 const transporter = nodemailer.createTransport({
   service: "Gmail",
   auth: {
