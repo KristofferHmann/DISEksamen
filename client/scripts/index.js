@@ -230,26 +230,6 @@ async function login() {
   }
 }
 
-//signup
-/*async function signup(userData) {
-  try {
-      const response = await fetch('/signup', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(userData)
-      });
-      if (response.ok) {
-          return true; // Registration successful
-      } else {
-          throw new Error('Failed to register user');
-      }
-  } catch (error) {
-      throw new Error('Error fetching data:', error);
-  }
-}*/
-
 document.addEventListener('DOMContentLoaded', function () {
   // Create a new <p> element
   const paragraph = document.createElement('p');
@@ -276,3 +256,23 @@ document.addEventListener('DOMContentLoaded', function () {
           console.error('Error:', error);
       });
 });
+
+//signup
+async function signup(userData) {
+  try {
+      const response = await fetch('/signup', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(userData)
+      });
+      if (response.ok) {
+          return true; // Registration successful
+      } else {
+          throw new Error('Failed to register user');
+      }
+  } catch (error) {
+      throw new Error('Error fetching data:', error);
+  }
+}

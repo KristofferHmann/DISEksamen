@@ -18,3 +18,22 @@ database.serialize(() => {
 } );
 
 module.exports = database;
+
+async function signupUser(data) {
+    try {
+     await this.connect();
+        const request = this.poolconnection.request();
+
+    request.input('username', sql.VarChar, data.username)
+    request.input('password', sql.VarChar, data.password)
+    request.input('email', sql.VarChar, data.email)         
+    request.input('phone', sql.VarChar, data.phone)
+    request.input('timeCreated', sql.VarChar, data.timeCreated)
+
+  const result = await request.query(
+    'INSERT INTO users (username, password, email, phone, timeCreated) VALUES (@username, @password, @email, @phone, @timeCreated)');
+    return result.rowsAffected[0];
+  } catch (error) {
+    console.error("Fejl ved registering af bruger", error.message); 
+    throw error;
+ }};

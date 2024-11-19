@@ -33,37 +33,6 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "client/pages", "index.html"));
 });
 
-app.get("/products", (req, res  ) => {  
-  const serverUri = `${req.protocol}://${req.get('host')}`;
-  const products = [
-    {
-      productName: "Orange Juice",
-      imgsrc: `${serverUri}/static/img/orange_juice.jpg`
-    },
-    {
-      productName: "Apple Juice",
-      imgsrc: `${serverUri}/static/img/apple_juice.jpg`
-    },
-    {
-      productName: "Grape Juice",
-      imgsrc: `${serverUri}/static/img/grapes.jpg`
-    },
-    {
-      productName: "Pineapple Juice",
-      imgsrc: `${serverUri}/static/img/pineapple_juice.jpg`
-    },
-    {
-      productName: "Espresso",
-      imgsrc: `${serverUri}/static/img/espresso.jpg`
-    },
-    {
-      productName: "Cappuccino",
-      imgsrc: `${serverUri}/static/img/cappuccino.jpg`
-    }
-  ];
-  res.json(products);
-});
-
 app.get("/locations", (req, res) => {
   res.sendFile(path.join(__dirname, "client/pages", "locations.html"));
 });
@@ -109,26 +78,6 @@ app.post("/email", async (req, res) => {
   }
 });
 
-
-const customers = [
-  {
-    username: "hans",
-    email: "hanshansen@gmail.com",
-    password: "hansemanse",
-  },
-  {
-    username: "jens",
-    email: "hanshansen@gmail.com",
-    password: "hansemanse",
-  },
-];
-
-
-app.get("/customers", (req, res) => {
-  res.json(customers);
-});
-
-
 app.post("/login", (req, res) => {
   const { username, password } = req.body;
   console.log(req.body);
@@ -166,7 +115,7 @@ app.get("/protected", (req, res) => {
   res.send(`Velkommen ${customer.username}`);
 });
 
-app.get('/culture', (req, res) => {
+/*app.get('/culture', (req, res) => {
   // Set Cache-Control header to prevent caching
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   res.sendFile(path.join(__dirname, "client/pages", "culture.html"));
@@ -177,20 +126,22 @@ app.get('/culture/image', (req, res) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   res.setHeader('Pragma', 'no-cache');
   res.sendFile(path.join(__dirname, "client/img", "cbs.jpeg"));
-});
-
-app.listen(3000, () => {
-  console.log("Server listening on port 3000");
-});
+}); */
 
 //login endpoint
 app.get('/login/', (req, res) => {
+  console.log(path.join(__dirname, "client/pages", "login.html"));
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   res.sendFile(path.join(__dirname, "client/pages", "login.html"));
 });
 
 //signup endpoint
 app.get('/signup/', (req, res) => {
+  console.log(path.join(__dirname, "client/pages", "signup.html")); 
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   res.sendFile(path.join(__dirname, "client/pages", "signup.html"));
+});
+
+app.listen(3000, () => {
+  console.log("Server listening on port 3000");
 });

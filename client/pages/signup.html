@@ -17,12 +17,17 @@
     <li style="float:right" class="active"><a href="/locations">Locations</a></li>
     <li style="float:right"><a href="/">Menu</a></li>
   </ul>
+
   <div class="center">
-    <h2>Login</h2>
-    <input type="text" id="usernameInput" placeholder="Indtast brugernavn">
-    <input type="password" id="passwordInput" placeholder="Indtast password">
-    <button onclick="login()">Login</button>
-  <p id="login"></p>
+    <h2>Opret bruger</h2>
+    <form id="registerForm" class="register">
+        <input type="text" id="usernameInput" placeholder="Indtast navn">
+        <input type="password" id="passwordInput" placeholder="Indtast password">
+        <input type="email" id="emailInput" placeholder="Indtast email">
+        <input type="phone" id="phoneInput" placeholder="Indtast telefonnummer">
+        <button onclick="login()">Opret bruger</button>
+        <p id="signup"></p>
+    </form>
 </div>
 
  
