@@ -1,10 +1,10 @@
 const express = require('express');
-//const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const database = require('./database.js');
 const router = express.Router();
 const path = require('path');
 require('dotenv').config();
- 
+const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 //const nodemailer = require('nodemailer'); 
 
 //signup endpoint
@@ -42,23 +42,41 @@ router.get('/login/', (req, res) => {
   res.sendFile(path.join(__dirname, "client/pages", "login.html"));
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
+  
   const { username, password } = req.body;
-  console.log(req.body);
 
-  const customer = customers.find(
-    (user) => user.username === username && user.password === password
-  );
+  if (!username || !password) {
+    console.error('Manglende brugernavn eller adgangskode.');
+    return res.status(400).send({ message: "Brugernavn og adgangskode er påkrævet" });
+  }
+  try {
+    // Hent bruger fra databasen
+    const user = await database.getUserByUsernameAndPassword(username, password);
+    console.log('5.Database resultat:', user);
 
-  if (customer) {
-    res
-      .cookie("userAuth", username, {
-        maxAge: 3600000,
-      })
-      .send({ message: "Du er blevet logget ind" })
-      .status(200);
-  } else {
-    res.status(401).send({ message: "Forkert brugernavn eller adgangskode" });
+    if (!user) {
+      console.error('Ugyldigt brugernavn eller adgangskode.');
+      // Returnér fejl, hvis brugeren ikke findes
+      return res.status(401).json({ error: 'Invalid username or password.' });
+    }
+    console.log('6.User ID:', user.id);
+    console.log('7.Username:', user.username);
+      // Generate JWT token
+      
+    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+  
+    // Set token as a cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: true, // Set to true in production with HTTPS
+      sameSite: 'Strict',
+    });
+
+    res.json({ message: 'Login successful', token });
+  } catch (err) {
+    console.error('Error during login:', err.message);
+    res.status(500).json({ error: 'An error occurred during login.' });
   }
 });
 
