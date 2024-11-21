@@ -6,6 +6,8 @@ const nodemailer = require("nodemailer");
 const responseTime = require('response-time')
 const router = require('./routes.js');
 
+
+
 const app = express();
 
 app.use(cors());
@@ -83,7 +85,7 @@ app.post("/email", async (req, res) => {
   }
 });
 
-app.post("/login", (req, res) => {
+/*app.post("/login", (req, res) => {
   const { username, password } = req.body;
   console.log(req.body);
 
@@ -101,10 +103,10 @@ app.post("/login", (req, res) => {
   } else {
     res.status(401).send({ message: "Forkert brugernavn eller adgangskode" });
   }
-});
+});*/
 
 
-app.get("/protected", (req, res) => {
+/*app.get("/protected", (req, res) => {
   const authCookie = req.cookies.userAuth;
 
   if (!authCookie) {
@@ -118,7 +120,7 @@ app.get("/protected", (req, res) => {
   }
 
   res.send(`Velkommen ${customer.username}`);
-});
+});*/
 
 /*app.get('/culture', (req, res) => {
   // Set Cache-Control header to prevent caching
@@ -134,7 +136,7 @@ app.get('/culture/image', (req, res) => {
 }); */
 
 //login endpoint
-app.get('/login/', (req, res) => {
+/*app.get('/login/', (req, res) => {
   console.log(path.join(__dirname, "client/pages", "login.html"));
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   res.sendFile(path.join(__dirname, "client/pages", "login.html"));
@@ -145,7 +147,7 @@ app.get('/signup/', (req, res) => {
   console.log(path.join(__dirname, "client/pages", "signup.html")); 
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   res.sendFile(path.join(__dirname, "client/pages", "signup.html"));
-});
+});*/
 
 app.listen(3000, () => {
   console.log("Server listening on port 3000");
