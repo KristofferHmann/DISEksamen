@@ -7,4 +7,3 @@ CREATE TABLE users (
     phonenumber VARCHAR(255) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-

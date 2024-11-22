@@ -1,57 +1,126 @@
-// Tilføjer en event listener til dokumentet, der afventer at alt indhold er indlæst
 document.addEventListener('DOMContentLoaded', () => {
-    // Finder registreringsformularen i dokumentet
+    // DOM elements
     const registerForm = document.getElementById('registerForm');
+    const sendOtpButton = document.getElementById('sendOtp');
+    const otpModal = document.getElementById('otpModal');
+    const closeModal = document.getElementById('closeModal');
+    const verifyOtpButton = document.getElementById('verifyOtpButton');
+    const otpInput = document.getElementById('otp');
 
-    // Tjekker om registreringsformularen eksisterer, før der tilføjes en event listener
-    if (registerForm) {
-        // Tilføjer en event listener til formularen, der afventer at formularen indsendes
-        registerForm.addEventListener('submit', async (event) => {
-            // Forhindrer formularen i at indsende som standard, så vi kan håndtere indsendelsen manuelt
-            event.preventDefault();
+    let userData = {}; // Store user data temporarily
+    let isOtpVerified = false; // Track OTP verification status
 
-            // Finder inputfelterne for brugernavn, adgangskode, vægt, alder og køn i dokumentet
-            const username = document.getElementById('username');
-            const password = document.getElementById('password');
-            const email = document.getElementById('email');
-            const phonenumber = document.getElementById('phonenumber');
+    // Send OTP
+    sendOtpButton.addEventListener('click', async () => {
+        const countryCode = document.getElementById('countryCode').value;
+        const phonenumber = document.getElementById('phonenumber').value;
 
-            // Samler brugerdata fra inputfelterne i et objekt
-            const userData = {
-                username: username.value,
-                password: password.value,
-                email: email.value,
-                phonenumber: phonenumber.value,
-            };
-            console.log('User Data:', userData);
+        if (!phonenumber) {
+            return alert('Indtast venligst dit telefonnummer for at sende OTP.');
+        }
+        const fullPhoneNumber = `${countryCode}${phonenumber}`;
+        try {
+            // Send OTP via server
+            const response = await fetch('/sendOtp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({  fullPhoneNumber }),
+            });
 
-            if (!username || !password || !email || !phonenumber) {
-                console.error('All fields are required.');
-                return alert('All fields are required. Please fill out the form.');
+            if (response.ok) {
+                alert('OTP sendt til din SMS. Kontroller din besked.');
+                otpModal.style.display = 'block'; // Show OTP modal
+            } else {
+                const error = await response.json();
+                console.error('Error sending OTP:', error);
+                alert('Kunne ikke sende OTP. Prøv venligst igen.');
             }
-            try {
-                // Sender brugerdata til serveren via en POST-anmodning
-                const response = await fetch('/signup', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(userData),
-                });
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Der opstod en fejl ved afsendelse af OTP.');
+        }
+    });
 
-                // Håndterer serverens svar
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log('User created successfully:', result);
-                    // Eventuelt vis en succesbesked til brugeren
-                } else {
-                    console.error('Error creating user:', response.statusText);
-                    // Eventuelt vis en fejlbesked til brugeren
-                }
-            } catch (error) {
-                console.error('Error creating user:', error);
-                // Eventuelt vis en fejlbesked til brugeren
+    // Close the OTP modal
+    closeModal.addEventListener('click', () => {
+        otpModal.style.display = 'none';
+    });
+
+    // Verify OTP and complete signup
+    verifyOtpButton.addEventListener('click', async () => {
+        const countryCode = document.getElementById('countryCode').value;
+        const phonenumber = document.getElementById('phonenumber').value;
+        const otp = otpInput.value;
+
+        if (!otp) {
+            return alert('Indtast venligst OTP.');
+        }
+        const fullPhoneNumber = `${countryCode}${phonenumber}`;
+        try {
+            // Verify OTP via server
+            const response = await fetch('/verifyOtp', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fullPhoneNumber, otp }),
+            });
+
+            if (response.ok) {
+                alert('OTP verificeret. Du kan nu færdiggøre registreringen.');
+                otpModal.style.display = 'none'; // Close OTP modal
+                isOtpVerified = true; // Mark OTP as verified
+            } else {
+                const error = await response.json();
+                console.error('Invalid OTP:', error);
+                alert('Ugyldig OTP. Prøv igen.');
             }
-        });
-    }
+        } catch (error) {
+            console.error('Error verifying OTP:', error);
+            alert('Der opstod en fejl under OTP-verifikation.');
+        }
+    });
+
+    // Handle form submission
+    registerForm.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Prevent default form submission
+
+        // Collect user data
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const email = document.getElementById('email').value;
+        const phonenumber = document.getElementById('phonenumber').value;
+        const countryCode = document.getElementById('countryCode').value;
+        
+        if (!username || !password || !email || !phonenumber) {
+            return alert('Alle felter er påkrævet. Udfyld venligst formularen.');
+        }
+
+        if (!isOtpVerified) {
+            return alert('OTP skal verificeres, før du kan oprette en bruger.');
+        }
+        const fullPhoneNumber = `${countryCode}${phonenumber}`;
+        // Prepare user data for signup
+        userData = { username, password, email, phonenumber: fullPhoneNumber };
+
+        try {
+            const response = await fetch('/signup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData),
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert('Bruger oprettet med succes!');
+                console.log('User created successfully:', result);
+                window.location.reload(); // Reload after signup
+            } else {
+                const error = await response.json();
+                console.error('Error completing signup:', error);
+                alert('Kunne ikke fuldføre registrering. Prøv igen.');
+            }
+        } catch (error) {
+            console.error('Error completing signup:', error);
+            alert('Der opstod en fejl under registrering.');
+        }
+    });
 });
