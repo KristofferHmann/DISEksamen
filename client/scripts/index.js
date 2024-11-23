@@ -1,4 +1,4 @@
-// const responseDom = document.getElementById("response");
+const responseDom = document.getElementById("response");
 // const cookieDom = document.getElementById("cookie");
 // const locationDom = document.getElementById("location");
 // const latlongDom = document.getElementById("latlong");
@@ -9,30 +9,31 @@
 // const passwordInputDom = document.getElementById('passwordInput');
 // const loginDom = document.getElementById('login');
 
-// // async funktion med await
-// async function getResponse() {
-//   // try catch blok
-//   try {
-//     // fetch data fra /res endpoint og await responsen
-//     const response = await fetch('/res');
+// async funktion med await
+async function getResponse() {
+  // try catch blok
+  const responseDom = document.getElementById("responseTime");
+  try {
+    // fetch data fra /res endpoint og await responsen
+    const response = await fetch('/res');
     
-//     // hvis responsen ikke er ok, kast en fejl
-//     if (!response.ok) {
-//       throw new Error(`HTTP error! Status: ${response.status}`);
-//     }
+    // hvis responsen ikke er ok, kast en fejl
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
     
-//     // konverter responsen til tekst
-//     const data = await response.text(); 
+    // konverter responsen til tekst
+    const data = await response.text(); 
     
-//     // håndter succes
-//     console.log(data);
-//     responseDom.innerHTML = data;
-//   } catch (error) {
-//     // håndter fejl
-//     console.log(error);
-//     responseDom.innerHTML = `<p>Error: ${error.message}</p>`;
-//   }
-// }
+    // håndter succes
+    console.log(data);
+    responseDom.innerHTML = data;
+  } catch (error) {
+    // håndter fejl
+    console.log(error);
+    responseDom.innerHTML = `<p>Error: ${error.message}</p>`;
+  }
+}
 
 // // async funktion med await
 // async function setCookie() {
