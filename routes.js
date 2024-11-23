@@ -8,7 +8,18 @@ const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 const twilio = require('twilio');
 const { channel } = require('diagnostics_channel');
 const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
-//const nodemailer = require('nodemailer'); 
+const nodemailer = require('nodemailer'); 
+
+
+// Nodemailer transporter
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: process.env.EMAIL_USERNAME,
+    pass: process.env.EMAIL_PASSWORD,
+  },
+});
+
 
 //signup endpoint
 router.get('/signup/', (req, res) => {
@@ -27,6 +38,23 @@ router.post('/signup', async (req, res) => {
     const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
     // Set JWT as cookie
     res.cookie('token', token, { httpOnly: true, secure: true });
+
+    const mailOptions = {
+      from: '"JOE Support" <cviktorbnowak17@gmail.com>', // Sender address
+      to: user.email,
+      subject: 'Welcome to JOE!',
+      text: `Hi ${user.username},\n\nThank you for signing up to JOE! We're glad to have you on board.`,
+      html: `<h1>Welcome to JOE, ${user.username}!</h1><p>Thank you for joining our platform. Feel free to explore and enjoy our services.</p>`,
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending signup email:', error.message);
+        // Log the error but don't fail the signup process
+      } else {
+        console.log('Signup email sent:', info.response);
+      }
+    });
+
 
     res.status(201).json({ rowsAffected }); // Sender antallet af påvirkede rækker tilbage
   } catch (err) {
@@ -166,26 +194,26 @@ router.post('/verifyOtp', async (req, res) => {
   res.send(`Velkommen ${customer.username}`);
 });*/
 
-router.post("/email", async (req, res) => {
-  const { email } = req.body;
-  const sender = "JOE <cviktorbnowak17@gmail.com>";
-  const subjectMsg = "Welcome to JOE";
-  const textMsg = "Welcome to JOE";
-  const htmlMsg = "<h1>Welcome to JOE</h1>";
+// router.post("/email", async (req, res) => {
+//   const { email } = req.body;
+//   const sender = "JOE <cviktorbnowak17@gmail.com>";
+//   const subjectMsg = "Welcome to JOE";
+//   const textMsg = "Welcome to JOE";
+//   const htmlMsg = "<h1>Welcome to JOE</h1>";
 
-  try {
-    const info = await transporter.sendMail({
-      from: sender,
-      to: email,
-      subject: subjectMsg,
-      text: textMsg,
-      html: htmlMsg,
-    });
-    console.log("Message sent: %s", info.messageId);
-    res.json({ message: `Email sendt til ${email}` });
-  } catch (error) {
-    console.error(error);
-    res.json({ message: "Email kunne ikke sendes" });
-  }
-});
+//   try {
+//     const info = await transporter.sendMail({
+//       from: sender,
+//       to: email,
+//       subject: subjectMsg,
+//       text: textMsg,
+//       html: htmlMsg,
+//     });
+//     console.log("Message sent: %s", info.messageId);
+//     res.json({ message: `Email sendt til ${email}` });
+//   } catch (error) {
+//     console.error(error);
+//     res.json({ message: "Email kunne ikke sendes" });
+//   }
+// });
 module.exports = router;
