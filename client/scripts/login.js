@@ -21,11 +21,7 @@ async function login() {
         const data = await response.json();
         loginMessage.style.color = 'green';
         loginMessage.textContent = 'Login successful! Redirecting...';
-  
-        // Redirect to index.html
-        setTimeout(() => {
-          window.location.href = '../';
-        }, 1000);
+        window.location.href = '/';
       } else {
         const errorData = await response.json();
         loginMessage.textContent = errorData.error || 'Login failed!';

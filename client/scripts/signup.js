@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Bruger oprettet med succes!');
                 console.log('User created successfully:', result);
                 alert(`En velkomstmail er blevet sendt til ${email}. Kontroller din indbakke.`);
-                window.location.reload(); // Reload after signup
+                window.location.href ='/login'; //Sender brugeren til login siden
 
             } else {
                 const error = await response.json();

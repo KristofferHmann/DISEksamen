@@ -54,48 +54,6 @@ app.get("/cookie", (req, res) => {
 // Send svar tilbage til klienten om at emailen er sendt med res.json og et message objekt
 // Link til dokumentation: https://expressjs.com/en/api.html#res.json
 
-app.post("/email", async (req, res) => {
-  const { email } = req.body;
-  const sender = "JOE <cviktorbnowak17@gmail.com>";
-  const subjectMsg = "Welcome to JOE";
-  const textMsg = "Welcome to JOE";
-  const htmlMsg = "<h1>Welcome to JOE</h1>";
-
-  try {
-    const info = await transporter.sendMail({
-      from: sender,
-      to: email,
-      subject: subjectMsg,
-      text: textMsg,
-      html: htmlMsg,
-    });
-    console.log("Message sent: %s", info.messageId);
-    res.json({ message: `Email sendt til ${email}` });
-  } catch (error) {
-    console.error(error);
-    res.json({ message: "Email kunne ikke sendes" });
-  }
-});
-
-/*app.post("/login", (req, res) => {
-  const { username, password } = req.body;
-  console.log(req.body);
-
-  const customer = customers.find(
-    (user) => user.username === username && user.password === password
-  );
-
-  if (customer) {
-    res
-      .cookie("userAuth", username, {
-        maxAge: 3600000,
-      })
-      .send({ message: "Du er blevet logget ind" })
-      .status(200);
-  } else {
-    res.status(401).send({ message: "Forkert brugernavn eller adgangskode" });
-  }
-});*/
 
 
 /*app.get("/protected", (req, res) => {
