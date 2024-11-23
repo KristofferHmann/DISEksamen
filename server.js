@@ -6,7 +6,6 @@ const nodemailer = require("nodemailer");
 const responseTime = require('response-time')
 const router = require('./routes.js');
 require('dotenv').config();
-console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
 
 const app = express();

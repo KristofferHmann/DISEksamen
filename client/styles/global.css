@@ -1,5 +1,7 @@
 body {
-  margin: 0px;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f8f8f8;
 }
 
 ul {
@@ -43,42 +45,49 @@ ul {
 } */
 
 .center {
-  padding-top: 50px;
   display: flex;
-  justify-content: center;
   flex-direction: column;
+  align-items: center;
+  margin-top: 100px;
+}
+h2 {
+  font-size: 24px;
+  color: #303030;
+}
+input, select, button {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  margin-bottom: 15px;
+  font-size: 16px;
+}
+button {
+  background-color: #f7c1d9;
+  color: #303030;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+button:hover {
+  background-color: #f09bc1;
+}
+
+.hidden {
+  display: none;
+}
+
+form {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
 }
 
-.center button {
-  border: 2px solid black;
-  border-radius: 10px;
-  padding: 10px;
-  margin-left: 45%;
-  margin-right: 45%;
-  background-color: #f7c1d9;
-  font-weight: bold;
-}
-
-.center input {
-  border: 2px solid black;
-  border-radius: 10px;
-  padding: 10px;
-  margin-left: 45%;
-  margin-right: 45%;
-  margin-top: 20px;
-  margin-bottom: 20px;
-}
-
-select {
-  border: 2px solid black;
-  border-radius: 10px;
-  padding: 10px;
-  margin-left: 45%;
-  margin-right: 45%;
-  margin-bottom: 20px;
-  font-weight: bold;
-}
 
 
 .product-list {
@@ -119,20 +128,3 @@ select {
   color: #303030;
 }
 
-/* Style til signup.html */
-.phone-input {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-#countryCode {
-  padding: 5px;
-  font-size: 16px;
-}
-
-#phonenumber {
-  flex: 1;
-  padding: 5px;
-  font-size: 16px;
-}

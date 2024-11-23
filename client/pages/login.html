@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./static/styles/global.css">
+  <link rel="stylesheet" href="./static/styles/login.css">
   <title>JOE and The Juice</title>
 </head>
 
@@ -16,14 +16,18 @@
     <li style="float:right" class="active"><a href="/locations">Locations</a></li>
     <li style="float:right"><a href="/">Menu</a></li>
   </ul>
+
   <div class="center">
+    <form>
     <h2>Login</h2>
+
     <input type="text" id="usernameInput" placeholder="Indtast brugernavn">
     <input type="password" id="passwordInput" placeholder="Indtast password">
     <button onclick="login()">Login</button>
   <p id="login"></p>
   <p id="loginMessage" style="color: red;"></p>
   <p class="message">Ikke registreret? <a href="../signup">Opret en bruger</a></p>
+</form>
 </div>
 
  

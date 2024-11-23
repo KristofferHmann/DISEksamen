@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./static/styles/global.css">
+  <link rel="stylesheet" href="./static/styles/signup.css">
   <title>JOE and The Juice</title>
 </head>
 
@@ -20,7 +20,43 @@
   <div class="center">
     <h2>Opret bruger</h2>
     <form id="registerForm" class="register" method="POST">
-      <input type="text" id="username" name="username" placeholder="Indtast brugernavn" required>
+      <!-- telefon verificering-->
+       <div id="phoneStep">
+        <div class="phone-input">
+          <select id="countryCode" name="countryCode" required>
+            <option value="+45" selected>🇩🇰 Denmark, +45</option>
+            <option value="+1">🇺🇸 USA, +1</option>
+            <option value="+91">🇮🇳 India, +91</option>
+            <option value="+44">🇬🇧 UK, +44</option>
+            <option value="+61">🇦🇺 Australia, +61</option>
+            <!-- Add more countries as needed -->
+          </select>
+          <input type="tel" id="phonenumber" name="phonenumber" placeholder="Phone number" required>
+        </div>
+        <button type="button" id="sendOtp">Send OTP</button>
+
+       </div>
+ <!-- OTP Modal -->
+ <div id="otpModal" class="hidden">
+  <h3>Enter OTP</h3>
+  <input type="text" id="otp" placeholder="Verification Code" required>
+  <button type="button" id="verifyOtpButton">Verify OTP</button>
+  <button type="button" id="closeModal">Cancel</button>
+</div>
+
+<!-- Step 2: User details -->
+<div id="detailsStep" class="hidden">
+  <input type="text" id="username" name="username" placeholder="Enter username" required>
+  <input type="password" id="password" name="password" placeholder="Enter password" required>
+  <input type="email" id="email" name="email" placeholder="Enter email" required>
+  <button type="submit" id="submitForm">Create Account</button>
+</div>
+</form>
+</div>
+
+
+
+    <!--  <input type="text" id="username" name="username" placeholder="Indtast brugernavn" required>
       <input type="password" id="password" name="password" placeholder="Indtast password" required>
       <input type="email" id="email" name="email" placeholder="Indtast email" required>
       <select id="countryCode" name="countryCode" required>
@@ -29,7 +65,7 @@
         <option value="+91">🇮🇳 +91 (India)</option>
         <option value="+44">🇬🇧 +44 (UK)</option>
         <option value="+61">🇦🇺 +61 (Australia)</option>
-        <!-- Add more countries as needed -->
+        
       </select>
       <input type="tel" id="phonenumber" name="phonenumber" placeholder="Indtast telefonnummer" required>
       <button type="button" id="sendOtp">Send engangskode</button>
@@ -39,7 +75,7 @@
   </form>
 </div>
 
-  <!-- OTP Modal -->
+  
   <div id="otpModal">
     <div class="modal-content">
       <h3>Indtast OTP</h3>
@@ -48,7 +84,7 @@
       <button type="button" id="closeModal">Cancel</button>
       
     </div>
-  </div>
+  </div>-->
 
 </body> 
 <script src="./static/scripts/signup.js"></script>

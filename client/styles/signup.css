@@ -1,0 +1,102 @@
+/*global css1*/
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+  }
+  
+  ul {
+      font-family: Calibri;
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #f7c1d9;
+      font-size: 2em;
+    }
+
+    li {
+        float: left;
+      } 
+      
+      li a {
+        display: block;
+        color: rgb(41, 41, 41);
+        text-align: center;
+        padding: 14px 16px;
+        text-decoration: none;
+      }
+      li img{
+        display: block;
+        width: 65px;
+      }
+
+/*signup css telefon*/  
+.center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 100px;
+  }
+  h2 {
+    font-size: 24px;
+    color: #303030;
+  }
+  input, select, button {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-bottom: 15px;
+    font-size: 16px;
+  }
+  button {
+    background-color: #f7c1d9;
+    color: #303030;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  button:hover {
+    background-color: #f09bc1;
+  }
+  
+  .hidden {
+    display: none;
+  }
+  
+  form {
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+  }
+  .phone-input {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    gap: 15px; /* Add space between the elements */
+    align-items: flex-start; /* Align elements to the start */
+  }
+  
+  #countryCode {
+    padding: 5px;
+    font-size: 16px;
+  }
+  
+  #phonenumber {
+    flex: 1;
+    padding: 5px;
+    font-size: 16px;
+  }
+  

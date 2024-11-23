@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModal = document.getElementById('closeModal');
     const verifyOtpButton = document.getElementById('verifyOtpButton');
     const otpInput = document.getElementById('otp');
+    const detailsStep = document.getElementById('detailsStep');
+    const phoneStep = document.getElementById('phoneStep');
+    document.getElementById('phonenumber').removeAttribute('disabled');
 
     let userData = {}; // Store user data temporarily
     let isOtpVerified = false; // Track OTP verification status
@@ -68,6 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('OTP verificeret. Du kan nu færdiggøre registreringen.');
                 otpModal.style.display = 'none'; // Close OTP modal
                 isOtpVerified = true; // Mark OTP as verified
+                phoneStep.style.display = 'none'; // Hide phone step
+                detailsStep.classList.remove('hidden'); // Show details step
             } else {
                 const error = await response.json();
                 console.error('Invalid OTP:', error);
