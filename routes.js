@@ -8,7 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 const twilio = require('twilio');
 const { channel } = require('diagnostics_channel');
 const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
-const nodemailer = require('nodemailer'); 
+const nodemailer = require('nodemailer');
 
 
 // Nodemailer transporter
@@ -40,11 +40,59 @@ router.post('/signup', async (req, res) => {
     res.cookie('token', token, { httpOnly: true, secure: true });
 
     const mailOptions = {
-      from: '"JOE Support" <cviktorbnowak17@gmail.com>', // Sender address
+      from: `"JOE Support" <${process.env.EMAIL_USERNAME}>`, // Sender address
       to: user.email,
       subject: 'Welcome to JOE!',
-      text: `Hi ${user.username},\n\nThank you for signing up to JOE! We're glad to have you on board.`,
-      html: `<h1>Welcome to JOE, ${user.username}!</h1><p>Thank you for joining our platform. Feel free to explore and enjoy our services.</p>`,
+      text: `Hi ${user.username}! We're super excited to have you join the Joe & The Juice family! 
+
+Your account is all set up and ready to go. Now you can:
+• Order your favorite juices, shakes, and food for pickup
+• Earn points on every purchase
+
+
+Pro tip: Try our legendary Tunacado sandwich with a Power Shake for the perfect energy boost!
+
+Got questions? We're here to help! Just reply to this email or visit us in any of our shops.
+
+Stay energized!
+The Joe & The Juice Team
+
+P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
+      html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <img src="./img/joeLogo.svg" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
+        
+        <h1 style="color: #FF0066; margin-bottom: 20px;">Hey ${user.username}! 🌱</h1>
+        
+        <p style="font-size: 16px; line-height: 1.5; color: #333;">We're super excited to have you join the Joe & The Juice family!</p>
+        
+        <p style="font-size: 16px; line-height: 1.5; color: #333;">Your account is all set up and ready to go. Here's what you can do now:</p>
+        
+        <ul style="font-size: 16px; line-height: 1.5; color: #333; margin: 20px 0;">
+          <li>Order your favorite juices, shakes, and food for pickup</li>
+          <li>Track your orders and save your favorites</li>
+        </ul>
+        
+        <div style="background-color: #FDBFD9; color: #23272A; padding: 20px; border-radius: 8px; margin: 20px 0;">
+          <p style="font-size: 16px; margin: 0; color: #333;">
+            <strong>Pro tip:</strong> Try our legendary Tunacado sandwich with a Power Shake for the perfect energy boost! 💪
+          </p>
+        </div>
+        
+        <p style="font-size: 16px; line-height: 1.5; color: #333;">
+          Got questions? We're here to help! Just reply to this email or visit us in any of our shops.
+        </p>
+        
+        <p style="font-size: 16px; line-height: 1.5; color: #333;">
+          Stay energized!<br>
+          <strong>The Joe & The Juice Team</strong>
+        </p>
+        
+        <p style="font-size: 14px; color: #666; font-style: italic; margin-top: 30px;">
+          P.S. Follow us on Instagram <a href="https://instagram.com/joeandthejuice" style="color: #FF0066; text-decoration: none;">@joejuice</a> for daily inspiration and updates!
+        </p>
+      </div>
+    `,
     };
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
@@ -159,7 +207,7 @@ router.post('/verifyOtp', async (req, res) => {
 
     // Check the verification using Twilio's Verify API
     const verificationCheck = await client.verify.v2.services(serviceSid).verificationChecks.create({
-      to: `sms:${fullPhoneNumber}`, 
+      to: `sms:${fullPhoneNumber}`,
       code: otp,
     });
 
