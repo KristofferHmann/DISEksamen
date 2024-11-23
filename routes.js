@@ -97,7 +97,7 @@ router.post('/sendOtp', async (req, res) => {
   try {
     const serviceSid = process.env.TWILIO_VERIFY_SERVICE_SID;
 
-    console.log('Sending to:', `whatsapp:${fullPhoneNumber}`);
+    console.log('Sending to:', `sms:${fullPhoneNumber}`);
     console.log('Using Service SID:', serviceSid);
 
     // Create a verification using Twilio's Verify API
