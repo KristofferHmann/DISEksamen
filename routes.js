@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const database = require('./database.js');
+const { allQuery } = require("./database.js");
 const router = express.Router();
 const path = require('path');
 require('dotenv').config();
@@ -60,7 +61,7 @@ The Joe & The Juice Team
 P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
       html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <img src="./img/joeLogo.svg" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
+        <img src="/static/img/joeLogo.svg" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
         
         <h1 style="color: #FF0066; margin-bottom: 20px;">Hey ${user.username}! 🌱</h1>
         
@@ -224,7 +225,16 @@ router.post('/verifyOtp', async (req, res) => {
   }
 });
 
-
+//cloudinary
+router.get("/api/uploads", async (req, res) => {
+  try {
+    const uploads = await allQuery("SELECT * FROM uploads");
+    res.status(200).json(uploads); // Send the data as JSON
+  } catch (error) {
+    console.error("Error fetching uploads:", error.message);
+    res.status(500).json({ error: "Failed to fetch uploads" });
+  }
+});
 
 /*router.get("/protected", (req, res) => {
   const authCookie = req.cookies.userAuth;
@@ -242,26 +252,4 @@ router.post('/verifyOtp', async (req, res) => {
   res.send(`Velkommen ${customer.username}`);
 });*/
 
-// router.post("/email", async (req, res) => {
-//   const { email } = req.body;
-//   const sender = "JOE <cviktorbnowak17@gmail.com>";
-//   const subjectMsg = "Welcome to JOE";
-//   const textMsg = "Welcome to JOE";
-//   const htmlMsg = "<h1>Welcome to JOE</h1>";
-
-//   try {
-//     const info = await transporter.sendMail({
-//       from: sender,
-//       to: email,
-//       subject: subjectMsg,
-//       text: textMsg,
-//       html: htmlMsg,
-//     });
-//     console.log("Message sent: %s", info.messageId);
-//     res.json({ message: `Email sendt til ${email}` });
-//   } catch (error) {
-//     console.error(error);
-//     res.json({ message: "Email kunne ikke sendes" });
-//   }
-// });
 module.exports = router;

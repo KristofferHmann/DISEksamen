@@ -31,3 +31,5 @@ async function login() {
       loginMessage.textContent = 'En fejl opstod. Prøv igen senere.';
     }
   }
+
+  
