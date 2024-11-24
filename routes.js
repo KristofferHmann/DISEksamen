@@ -1,6 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const database = require('./database.js');
+const { databaseInstance } = require('./database.js');
 const { allQuery } = require("./database.js");
 const router = express.Router();
 const path = require('path');
@@ -34,7 +34,7 @@ router.post('/signup', async (req, res) => {
   try {
     const user = req.body; // Henter brugerdata fra request body
     user.created_at = new Date().toISOString(); // Add timeCreated field
-    const rowsAffected = await database.signupUser(user); // Registrerer brugeren i databasen
+    const rowsAffected = await databaseInstance.signupUser(user); // Registrerer brugeren i databasen
 
     const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
     // Set JWT as cookie
@@ -61,7 +61,7 @@ The Joe & The Juice Team
 P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
       html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <img src="/static/img/joeLogo.svg" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
+        <img src="https://res.cloudinary.com/dfaz3ygzy/image/upload/v1732404438/JoeProject/joeLogo.svg" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
         
         <h1 style="color: #FF0066; margin-bottom: 20px;">Hey ${user.username}! 🌱</h1>
         
@@ -132,7 +132,7 @@ router.post("/login", async (req, res) => {
   }
   try {
     // Hent bruger fra databasen
-    const user = await database.getUserByUsernameAndPassword(username, password);
+    const user = await databaseInstance.getUserByUsernameAndPassword(username, password);
     console.log('5.Database resultat:', user);
 
     if (!user) {

@@ -92,24 +92,7 @@ const allQuery = (query, params = []) => {
     });
   });
 };
-async function upload(file) {
-  const uploadOptions = {
-    folder: "JoeProject",
-    public_id:  path.basename(file, path.extname(file)),
-    resource_type: "auto",
-  };
-  try {
-    const result = await cloudinary.uploader.upload(file, uploadOptions);
-    await runQuery(
-      "INSERT INTO uploads (url, datetime, caption) VALUES (?, ?, ?)",
-      [result.secure_url, Date.now(), result.original_filename]
-    );
-    console.log(result);
-    getUploads();
-  } catch (error) {
-    console.error(error);
-  }
-}
+
 
 
 
@@ -161,8 +144,25 @@ class Database {
       });
     });
   }
-
+  async  upload(file) {
+    const uploadOptions = {
+      folder: "JoeProject",
+      public_id:  path.basename(file, path.extname(file)),
+      resource_type: "auto",
+    };
+    try {
+      const result = await cloudinary.uploader.upload(file, uploadOptions);
+      await runQuery(
+        "INSERT INTO uploads (url, datetime, caption) VALUES (?, ?, ?)",
+        [result.secure_url, Date.now(), result.original_filename]
+      );
+      console.log(result);
+      getUploads();
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
-module.exports = new Database();
-module.exports = { allQuery };
+const databaseInstance = new Database();
+module.exports = { databaseInstance, allQuery, runQuery};
