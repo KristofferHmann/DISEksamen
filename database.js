@@ -1,7 +1,8 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const path = require('path');
-
+require('dotenv').config();
+const cloudinary = require('cloudinary').v2;
 const database = new sqlite3.Database(path.resolve(__dirname, './database/db.sqlite'), (err) => {
   if (err) {
     console.error('Fejl ved forbindelse til databasen:', err.message);
@@ -10,6 +11,12 @@ const database = new sqlite3.Database(path.resolve(__dirname, './database/db.sql
   }
 });
 
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY, // Replace with your Cloudinary API key
+  api_secret: process.env.CLOUDINART_API_SECRET, // Replace with your Cloudinary API secret
+  secure: true,
+});
 
 // Run SQL script
 /*const runSQLScript = (filename) => {
@@ -54,6 +61,41 @@ const ensureTableExists = () => {
 };
 
 ensureTableExists();
+
+//Table for uploads
+database.serialize(() => {
+  database.run(
+    "CREATE TABLE IF NOT EXISTS uploads (id INTEGER PRIMARY KEY, url TEXT NOT NULL, datetime INTEGER, caption TEXT)"
+  );
+});
+
+const runQuery = (query, params) => {
+  return new Promise((resolve, reject) => {
+    database.run(query, params, (error) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve();
+      }
+    });
+  });
+};
+
+const allQuery = (query, params = []) => {
+  return new Promise((resolve, reject) => {
+    database.all(query, params, (error, rows) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(rows);
+      }
+    });
+  });
+};
+
+
+
+
 
 class Database {
   //Lav en bruger
@@ -100,7 +142,25 @@ class Database {
       });
     });
   }
-
+  async  upload(file) {
+    const uploadOptions = {
+      folder: "JoeProject",
+      public_id:  path.basename(file, path.extname(file)),
+      resource_type: "auto",
+    };
+    try {
+      const result = await cloudinary.uploader.upload(file, uploadOptions);
+      await runQuery(
+        "INSERT INTO uploads (url, datetime, caption) VALUES (?, ?, ?)",
+        [result.secure_url, Date.now(), result.original_filename]
+      );
+      console.log(result);
+      getUploads();
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }
 
-module.exports = new Database();
+const databaseInstance = new Database();
+module.exports = { databaseInstance, allQuery, runQuery};

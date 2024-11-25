@@ -16,15 +16,15 @@ async function getResponse() {
   try {
     // fetch data fra /res endpoint og await responsen
     const response = await fetch('/res');
-    
+
     // hvis responsen ikke er ok, kast en fejl
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    
+
     // konverter responsen til tekst
-    const data = await response.text(); 
-    
+    const data = await response.text();
+
     // håndter succes
     console.log(data);
     responseDom.innerHTML = data;
@@ -92,7 +92,7 @@ async function getResponse() {
 //       await getWeather(data[0].lat, data[0].lon);
 //     } else {
 //       throw new Error('No results found');
-//     } 
+//     }
 //   } catch (error) {
 //     // håndter fejl
 //     console.log(error);
@@ -167,7 +167,7 @@ async function getResponse() {
 //     if (!response.ok) {
 //       throw new Error('Failed to fetch products');
 //     }
-//     productList = await response.json(); 
+//     productList = await response.json();
 //     return productList;
 //   } catch (error) {
 //     console.error("Error:", error);
@@ -176,17 +176,17 @@ async function getResponse() {
 // }
 
 // async function displayProducts() {
-//   await fetchProducts();  
+//   await fetchProducts();
 //   const productContainer = document.getElementById("product-list");
 
-//   productContainer.innerHTML = ""; 
+//   productContainer.innerHTML = "";
 
 //   productList.forEach((product, index) => {
 //     const productItem = document.createElement("div");
 //     productItem.classList.add("product-item");
 
 //     const img = document.createElement("img");
-//     img.src = product.imgsrc;  
+//     img.src = product.imgsrc;
 //     img.alt = product.productName;
 
 //     const productName = document.createElement("h3");

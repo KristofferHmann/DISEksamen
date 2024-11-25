@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const database = require('./database.js');
+const { databaseInstance } = require('./database.js');
+const { allQuery } = require("./database.js");
 const router = express.Router();
 const path = require('path');
 require('dotenv').config();
@@ -48,7 +49,7 @@ router.post('/signup', async (req, res) => {
     user.password = await hashPassword(user.password);
 
     user.created_at = new Date().toISOString(); // Add timeCreated field
-    const rowsAffected = await database.signupUser(user); // Registrerer brugeren i databasen
+    const rowsAffected = await databaseInstance.signupUser(user); // Registrerer brugeren i databasen
 
     const mailOptions = {
       from: `"JOE Support" <${process.env.EMAIL_USERNAME}>`, // Sender address
@@ -71,7 +72,7 @@ The Joe & The Juice Team
 P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
       html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <img src="./img/joeLogo.svg" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
+        <img src="https://res.cloudinary.com/dfaz3ygzy/image/upload/v1732404438/JoeProject/joeLogo.svg" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
         
         <h1 style="color: #FF0066; margin-bottom: 20px;">Hey ${user.username}! 🌱</h1>
         
@@ -139,7 +140,8 @@ router.post("/login", async (req, res) => {
   }
   try {
     // Hent bruger fra databasen
-    const user = await database.getUserByUsername(username);
+    const user = await databaseInstance.getUserByUsernameAndPassword(username, password);
+    console.log('5.Database resultat:', user);
 
     if (!user) {
       console.error('Ugyldigt brugernavn eller adgangskode.');
@@ -233,4 +235,32 @@ router.post('/verifyOtp', async (req, res) => {
     res.status(500).json({ error: 'Failed to verify OTP' });
   }
 });
+
+//cloudinary
+router.get("/api/uploads", async (req, res) => {
+  try {
+    const uploads = await allQuery("SELECT * FROM uploads");
+    res.status(200).json(uploads); // Send the data as JSON
+  } catch (error) {
+    console.error("Error fetching uploads:", error.message);
+    res.status(500).json({ error: "Failed to fetch uploads" });
+  }
+});
+
+/*router.get("/protected", (req, res) => {
+  const authCookie = req.cookies.userAuth;
+
+  if (!authCookie) {
+    return res.status(401).send("Ingen authentication cookie.");
+  }
+
+  const customer = customers.find((user) => user.username === authCookie);
+
+  if (!customer) {
+    return res.status(401).send("Ugyldig cookie.");
+  }
+
+  res.send(`Velkommen ${customer.username}`);
+});*/
+
 module.exports = router;
