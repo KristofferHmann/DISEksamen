@@ -85,18 +85,16 @@ class Database {
   }
 
   // Get user by username and password
-  async getUserByUsernameAndPassword(username, password) {
+  async getUserByUsername(username) {
     return new Promise((resolve, reject) => {
-      const query = `SELECT id, username FROM users WHERE username = @username AND password = @password`;
-      const params = {
-        '@username': username,
-        '@password': password,
-      };
+      const query = `SELECT id, username, password FROM users WHERE username = ?`;
+      const params = [username];
       database.get(query, params, (err, row) => {
         if (err) {
-          console.error("Error fetching user by username and password", err.message);
+          console.error("Error fetching user by username", err.message);
           reject(err);
         } else {
+          console.log("Database query result:", row); // Debugging log
           resolve(row); // Resolve with the user row if found, or null if not
         }
       });
