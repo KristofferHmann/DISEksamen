@@ -1,7 +1,7 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const path = require("path");
-const cookieParser = require("cookie-parser");
 const nodemailer = require("nodemailer");
 const responseTime = require('response-time')
 const router = require('./routes.js');
@@ -11,6 +11,7 @@ require('dotenv').config();
 const app = express();
 
 app.use(cors());
+
 app.use("/static", express.static("client"));
 app.use((req, res, next) => {
   console.log("----- HTTP Request -----");

@@ -5,13 +5,16 @@ const { allQuery } = require("./database.js");
 const router = express.Router();
 const path = require('path');
 require('dotenv').config();
+const { hashPassword, verifyPassword, validatePassword } = require('./utils/passwordUtils.js');
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 const twilio = require('twilio');
 const { channel } = require('diagnostics_channel');
 const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 const nodemailer = require('nodemailer');
+const cookieParser = require('cookie-parser');
+const { log } = require('util');
 
-
+router.use(cookieParser());
 // Nodemailer transporter
 const transporter = nodemailer.createTransport({
   service: "Gmail",
@@ -24,7 +27,6 @@ const transporter = nodemailer.createTransport({
 
 //signup endpoint
 router.get('/signup/', (req, res) => {
-  console.log(path.join(__dirname, "client/pages", "signup.html"));
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   res.sendFile(path.join(__dirname, "client/pages", "signup.html"));
 });
@@ -33,12 +35,21 @@ router.get('/signup/', (req, res) => {
 router.post('/signup', async (req, res) => {
   try {
     const user = req.body; // Henter brugerdata fra request body
+
+    //tjekker om adgangskoden er mindst 8 tegn lang
+    if (user.password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters long.' });
+    }
+    if (!validatePassword(user.password)) {
+      return res.status(400).json({
+        error: 'Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.',
+      });
+    }
+    //hasher adgangskoden
+    user.password = await hashPassword(user.password);
+
     user.created_at = new Date().toISOString(); // Add timeCreated field
     const rowsAffected = await databaseInstance.signupUser(user); // Registrerer brugeren i databasen
-
-    const token = jwt.sign({ username: user.username }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    // Set JWT as cookie
-    res.cookie('token', token, { httpOnly: true, secure: true });
 
     const mailOptions = {
       from: `"JOE Support" <${process.env.EMAIL_USERNAME}>`, // Sender address
@@ -111,19 +122,16 @@ P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
   }
 
   const userData = req.body;
-  console.log('User Data:', userData);
 });
 
 
 //login endpoint
 router.get('/login/', (req, res) => {
-  console.log(path.join(__dirname, "client/pages", "login.html"));
   res.setHeader('Cache-Control', 'no-store, max-age=0');
   res.sendFile(path.join(__dirname, "client/pages", "login.html"));
 });
 
 router.post("/login", async (req, res) => {
-
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -132,25 +140,28 @@ router.post("/login", async (req, res) => {
   }
   try {
     // Hent bruger fra databasen
-    const user = await databaseInstance.getUserByUsernameAndPassword(username, password);
+    const user = await databaseInstance.getUserByUsername(username);
     console.log('5.Database resultat:', user);
 
     if (!user) {
       console.error('Ugyldigt brugernavn eller adgangskode.');
       // Returnér fejl, hvis brugeren ikke findes
+      return res.status(401).json({ error: 'Invalid username' });
+    }
+
+    const isPasswordValid = await verifyPassword(password, user.password);
+    if (!isPasswordValid) {
+      console.error('Invalid password.');
       return res.status(401).json({ error: 'Invalid username or password.' });
     }
-    console.log('6.User ID:', user.id);
-    console.log('7.Username:', user.username);
     // Generate JWT token
-
     const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
-
+    
     // Set token as a cookie
-    res.cookie('token', token, {
+    res.cookie("token", token, {
       httpOnly: true,
       secure: true, // Set to true in production with HTTPS
-      sameSite: 'Strict',
+      sameSite: 'strict',
     });
 
     res.json({ message: 'Login successful', token });

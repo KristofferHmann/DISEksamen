@@ -47,7 +47,7 @@
 <!-- Step 2: User details -->
 <div id="detailsStep" class="hidden">
   <input type="text" id="username" name="username" placeholder="Enter username" required>
-  <input type="password" id="password" name="password" placeholder="Enter password" required>
+  <input type="password" id="password" name="password" type="password" id="password" minlength="8" pattern="(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#$%^&*]).+" title="Password must be at least 8 characters long, with uppercase, lowercase, number, and special character." required placeholder="Enter password" required>
   <input type="email" id="email" name="email" placeholder="Enter email" required>
   <button type="submit" id="submitForm">Create Account</button>
 </div>

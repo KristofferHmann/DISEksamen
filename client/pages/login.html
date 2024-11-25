@@ -18,12 +18,11 @@
   </ul>
 
   <div class="center">
-    <form>
+    <form id="loginForm" onsubmit="login(event)">
     <h2>Login</h2>
-
     <input type="text" id="usernameInput" placeholder="Indtast brugernavn">
     <input type="password" id="passwordInput" placeholder="Indtast password">
-    <button onclick="login()">Login</button>
+    <button type="submit">Login</button>
   <p id="login"></p>
   <p id="loginMessage" style="color: red;"></p>
   <p class="message">Ikke registreret? <a href="../signup">Opret en bruger</a></p>

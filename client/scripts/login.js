@@ -1,4 +1,5 @@
-async function login() {
+async function login(event) {
+  event.preventDefault(); // Prevent the default form submission behavior
     const username = document.getElementById('usernameInput').value;
     const password = document.getElementById('passwordInput').value;
     const loginMessage = document.getElementById('loginMessage');
@@ -11,10 +12,12 @@ async function login() {
     try {
       const response = await fetch('/login', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ username, password }),
+      
       });
   
       if (response.ok) {
