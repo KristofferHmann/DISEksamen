@@ -45,6 +45,9 @@ app.get("/cookie", (req, res) => {
   res.send("Cookie set");
 });
 
+app.get("/menu", (req, res) => {
+  res.sendFile(path.join(__dirname, "client/pages", "menu.html"));
+});
 // Opgave 2: Lav et POST /email asynkront endpoint der sender en email til modtageren
 
 // Tag imod modtagerens emailadresse i req.body og lav try catch for at sende email
