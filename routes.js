@@ -140,7 +140,7 @@ router.post("/login", async (req, res) => {
   }
   try {
     // Hent bruger fra databasen
-    const user = await databaseInstance.getUserByUsernameAndPassword(username, password);
+    const user = await databaseInstance.getUserByUsername(username);
     console.log('5.Database resultat:', user);
 
     if (!user) {
