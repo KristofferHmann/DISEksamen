@@ -6,38 +6,40 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./static/styles/global.css">
+  <link rel="stylesheet" href="./static/styles/location.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <title>JOE and The Juice</title>
 </head>
 
 <body>
   <ul>
-    <li><div id="uploads-container"></div></li>
     <li><a href="/">Home</a></li>
     <li style="float:right" class="active"><a href="/locations">Locations</a></li>
     <li style="float:right"><a href="/menu">Menu</a></li>
   </ul>
-  <!--
-  <div class="center">
-    <select id="locationDropdown">
-      <option value="copenhagen">Copenhagen</option>
-      <option value="los_angeles">Los Angeles</option>
-      <option value="sydney">Sydney</option>
-    </select>
 
-    <button onclick="getLocation()">Submit</button>
-
-    <br />
-
-    <p id="location"></p>
-
-    <p id="latlong"></p>
-
-    <p id="weather"></p>
+  <div id="mapContainer">
+    <div id="map" style="height: 500px; flex: 3;"></div>
+    <div id="addressOverview" class="scrollable-box">
+      <h3>Butikker</h3>
+      <ul id="addressList"></ul>
+    </div>
   </div>
-  -->
+  
+  <div id="controls">
+    <button id="generateRoute" disabled>Vis Rute</button>
+  </div>
+  
+  <div id="statusDisplay">
+    Status: <span id="statusText">Idle</span>
+  </div>
+  
 </body>
 
-<script src="./static/scripts/index.js"></script>
-<script src="./static/scripts/displayUploads.js"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="./static/scripts/location.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mapbox/polyline@1.1.1/src/polyline.min.js"></script>
+
 
 </html>

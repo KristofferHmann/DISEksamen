@@ -1,0 +1,81 @@
+ #map {
+    height: 500px; /* Keep the map height */
+    width: 100%; /* Ensure full width */
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add a shadow */
+}
+
+/* Center the button and status text below the map */
+#controls {
+  margin: 10px auto;
+  text-align: center;
+  width: 50%; /* Set a width */
+}
+
+#generateRoute {
+  color: white; /* White text */
+  font-size: 16px; /* Larger font */
+  padding: 10px 20px; /* Add padding */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor */
+  transition: background-color 0.3s; /* Smooth color change on hover */
+}
+
+#generateRoute:hover:enabled {
+  background-color: #e96490; /* Darker pink when hovered */
+}
+
+#generateRoute:disabled {
+  background-color: #ccc; /* Gray when disabled */
+  cursor: not-allowed; /* Show not-allowed cursor */
+}
+
+#mapContainer {
+  display: flex; /* Align map and address list side by side */
+  gap: 10px; /* Add space between map and list */
+}
+
+#addressOverview {
+  flex: 1; /* Smaller width compared to the map */
+  max-width: 300px; /* Set max width */
+  max-height: 500px; /* Match map height */
+  overflow-y: auto; /* Enable scrolling */
+  border: 1px solid #ccc; /* Add a border */
+  padding: 10px; /* Add padding */
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+
+
+#addressOverview button {
+  background-color: #000000; /* Blue button */
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+#addressOverview button:hover {
+  background-color: #0056b3;
+}
+#addressOverview ul {
+  background-color: #ffffff; /* Blue button */
+}
+#addressOverview li {
+border-color: #000000;
+border: 1px solid;
+}
+
+#statusDisplay {
+  margin: 10px auto;
+  text-align: center;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  width: 50%;
+}

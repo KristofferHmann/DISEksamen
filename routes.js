@@ -13,6 +13,8 @@ const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN)
 const nodemailer = require('nodemailer');
 const cookieParser = require('cookie-parser');
 const { log } = require('util');
+const { getLocations } = require('./database');
+
 
 router.use(cookieParser());
 // Nodemailer transporter
@@ -72,7 +74,7 @@ The Joe & The Juice Team
 P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
       html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <img src="https://res.cloudinary.com/dfaz3ygzy/image/upload/v1732404438/JoeProject/joeLogo.svg" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
+        <img src="/static/img/joeLogo.svg" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
         
         <h1 style="color: #FF0066; margin-bottom: 20px;">Hey ${user.username}! 🌱</h1>
         
@@ -156,7 +158,7 @@ router.post("/login", async (req, res) => {
     }
     // Generate JWT token
     const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
-    
+
     // Set token as a cookie
     res.cookie("token", token, {
       httpOnly: true,
@@ -246,6 +248,60 @@ router.get("/api/uploads", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch uploads" });
   }
 });
+
+// Route to fetch directions
+router.post('/api/directions', async (req, res) => {
+  const { start, end } = req.body;
+
+  // Validate request body
+  if (
+    !start || !end ||
+    typeof start.lat !== 'number' || typeof start.lon !== 'number' ||
+    typeof end.lat !== 'number' || typeof end.lon !== 'number'
+  ) {
+    return res.status(400).json({ error: 'Invalid start or end coordinates' });
+  }
+
+  try {
+    const url = `https://api.openrouteservice.org/v2/directions/foot-walking`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': process.env.OPENROUTESERVICE_API_KEY, // Ensure this is set in your environment
+      },
+      body: JSON.stringify({
+        coordinates: [[start.lon, start.lat], [end.lon, end.lat]],
+        instructions: false, // Omit detailed instructions for now; change if needed
+      }),
+    });
+
+    // Handle non-OK responses from OpenRouteService
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('OpenRouteService API error:', errorText);
+      return res.status(502).json({ error: `Failed to fetch route: ${errorText}` });
+    }
+
+    const data = await response.json();
+    res.json(data); // Send the route data to the client
+  } catch (error) {
+    console.error('Error fetching directions:', error.message);
+    res.status(500).json({ error: 'Failed to fetch directions due to server error' });
+  }
+});
+
+// Endpoint to fetch Joe & The Juice locations
+router.get('/api/joeJuiceLocations', async (req, res) => {
+  try {
+    const locations = await getLocations();
+    res.json(locations);
+  } catch (error) {
+    console.error('Error fetching locations:', error.message);
+    res.status(500).json({ error: 'Failed to fetch locations' });
+  }
+});
+
 
 /*router.get("/protected", (req, res) => {
   const authCookie = req.cookies.userAuth;

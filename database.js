@@ -160,7 +160,20 @@ class Database {
       console.error(error);
     }
   }
+  
 }
 
+const getLocations = async () => {
+  try {
+    const query = `SELECT * FROM locations`;
+    const locations = await allQuery(query); // Fetch data using the allQuery helper
+    console.log('Fetched locations:', locations); // Log the result for debugging
+    return locations; // Return the array of location objects
+  } catch (error) {
+    console.error('Error fetching locations:', error.message);
+    throw new Error('Could not fetch locations');
+  }
+};
+
 const databaseInstance = new Database();
-module.exports = { databaseInstance, allQuery, runQuery};
+module.exports = { databaseInstance, allQuery, runQuery, getLocations};
