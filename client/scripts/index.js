@@ -35,6 +35,28 @@ async function getResponse() {
   }
 }
 
+function userIsLoggedIn() {
+  // Eksempel: Tjek for token i cookies
+  const token = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('token='))
+    ?.split('=')[1];
+  return !!token; // Returner true, hvis token eksisterer
+}
+// Når siden loader, ændr navigationen hvis brugeren er logget ind
+document.addEventListener('DOMContentLoaded', () => {
+  const navProfile = document.getElementById('nav-profile');
+  
+  if (userIsLoggedIn()) {
+    navProfile.innerText = 'Profile'; // Ændr teksten
+    navProfile.href = '/profile';    // Ændr linket
+  } else {
+    navProfile.innerText = 'Log in or sign up';
+    navProfile.href = '/login';
+  }
+});
+
+
 // // async funktion med await
 // async function setCookie() {
 //     // try catch blok

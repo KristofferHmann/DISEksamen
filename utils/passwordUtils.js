@@ -24,8 +24,7 @@ const validatePassword = (password) => {
 
 // Verify a password
 async function verifyPassword(plainPassword, hashedPassword) {
-  console.log("Plain password:", plainPassword);
-  console.log("Hashed password:", hashedPassword);
+
   if (!plainPassword || !hashedPassword) {
     throw new Error('Both plain password and hashed password are required');
   }

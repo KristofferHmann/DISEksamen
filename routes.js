@@ -2,6 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { databaseInstance } = require('./database.js');
 const { allQuery } = require("./database.js");
+const { runQuery, getQuery } = require("./database.js");
 const router = express.Router();
 const path = require('path');
 require('dotenv').config();
@@ -11,10 +12,10 @@ const twilio = require('twilio');
 const { channel } = require('diagnostics_channel');
 const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 const nodemailer = require('nodemailer');
+const { authenticateToken } = require('./auth.js');
 const cookieParser = require('cookie-parser');
 const { log } = require('util');
 const { getLocations } = require('./database');
-
 
 router.use(cookieParser());
 // Nodemailer transporter
@@ -143,7 +144,6 @@ router.post("/login", async (req, res) => {
   try {
     // Hent bruger fra databasen
     const user = await databaseInstance.getUserByUsername(username);
-    console.log('5.Database resultat:', user);
 
     if (!user) {
       console.error('Ugyldigt brugernavn eller adgangskode.');
@@ -161,9 +161,11 @@ router.post("/login", async (req, res) => {
 
     // Set token as a cookie
     res.cookie("token", token, {
-      httpOnly: true,
-      secure: true, // Set to true in production with HTTPS
-      sameSite: 'strict',
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
+      sameSite: 'lax',
+      maxAge: 3600000, // 1 time
+
     });
 
     res.json({ message: 'Login successful', token });
@@ -238,6 +240,72 @@ router.post('/verifyOtp', async (req, res) => {
   }
 });
 
+
+/*router.get('/profile', authenticateToken, (req, res) => {
+  res.send('Profile page!!!!!!');
+});*/
+router.get('/profile', authenticateToken, (req, res) => {
+  res.sendFile(path.join(__dirname, "client/pages", "profil.html"));
+});
+
+router.get('/api/profile', authenticateToken, async (req, res) => {
+  const userId = req.user.id; // From token
+  try {
+    const user = await databaseInstance.getUserById(userId);
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    res.json(user);
+  } catch (err) {
+    console.error('Error fetching user profile:', err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+router.put('/api/profile', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  let { email, username } = req.body;
+
+try {
+    // Fetch the current username if not provided
+    if (!username) {
+      const result = await getQuery('SELECT username FROM users WHERE id = ?', [userId]);
+      if (!result) {
+        return res.status(404).send('User not found');
+      }
+      username = result.username; // Use the existing username
+    }
+
+    // Validate email and username
+    if (!email || typeof email !== 'string') {
+      return res.status(400).send('Invalid email');
+    }
+    if (!username || typeof username !== 'string') {
+      return res.status(400).send('Invalid username');
+    }
+  
+    await runQuery(
+      'UPDATE users SET email = ?, username = ? WHERE id = ?',
+      [email, username, userId]
+    );
+    res.send('Profile updated successfully');
+  } catch (err) {
+    console.error('Error updating profile:', err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+router.delete('/api/profile', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    await runQuery('DELETE FROM users WHERE id = ?', [userId]);
+    res.send('Account deleted successfully');
+  } catch (err) {
+    console.error('Error deleting user:', err.message);
+    res.status(500).send('Server error');
+  }
+});
+
 //cloudinary
 router.get("/api/uploads", async (req, res) => {
   try {
@@ -301,22 +369,5 @@ router.get('/api/joeJuiceLocations', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch locations' });
   }
 });
-
-
-/*router.get("/protected", (req, res) => {
-  const authCookie = req.cookies.userAuth;
-
-  if (!authCookie) {
-    return res.status(401).send("Ingen authentication cookie.");
-  }
-
-  const customer = customers.find((user) => user.username === authCookie);
-
-  if (!customer) {
-    return res.status(401).send("Ugyldig cookie.");
-  }
-
-  res.send(`Velkommen ${customer.username}`);
-});*/
 
 module.exports = router;

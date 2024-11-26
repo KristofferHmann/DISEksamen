@@ -43,7 +43,6 @@ const ensureTableExists = () => {
       console.error('Fejl ved kontrol af tabel:', err.message);
       return;
     }
-
     if (!row) {
       console.log('Tabel "users" findes ikke. Opretter tabel...');
       const script = fs.readFileSync('./client/scripts/user.sql', 'utf8');
@@ -76,6 +75,17 @@ const runQuery = (query, params) => {
         reject(error);
       } else {
         resolve();
+      }
+    });
+  });
+};
+const getQuery = (query, params = []) => {
+  return new Promise((resolve, reject) => {
+    database.get(query, params, (err, row) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(row);
       }
     });
   });
@@ -128,16 +138,44 @@ class Database {
 
   // Get user by username and password
   async getUserByUsername(username) {
+    
+      if (typeof username !== "string") {
+        console.error("Invalid input for username:", username);
+        throw new Error("Invalid username input");
+      }
     return new Promise((resolve, reject) => {
       const query = `SELECT id, username, password FROM users WHERE username = ?`;
       const params = [username];
+
+      database.get(query, params, (err, row) => {
+      if (err) {
+        console.error("Error fetching user by username", err.message);
+        reject(err);
+      } else if (!row) {
+        console.log("No user found with username:", username);
+        resolve(null); // Resolve with null if no user is found
+      } else {
+        console.log("Database query result:", row); // Debugging log
+        resolve(row); // Resolve with the user row if found
+      }
+      });
+    });
+  }
+  async getUserById(id) {
+    return new Promise((resolve, reject) => {
+      const query = `SELECT id, username, email FROM users WHERE id = ?`;
+      const params = [id];
+  
       database.get(query, params, (err, row) => {
         if (err) {
-          console.error("Error fetching user by username", err.message);
+          console.error("Error fetching user by ID:", err.message);
           reject(err);
+        } else if (!row) {
+          console.log("No user found with ID:", id);
+          resolve(null);
         } else {
-          console.log("Database query result:", row); // Debugging log
-          resolve(row); // Resolve with the user row if found, or null if not
+          console.log("Database query result by ID:", row);
+          resolve(row);
         }
       });
     });
@@ -167,7 +205,6 @@ const getLocations = async () => {
   try {
     const query = `SELECT * FROM locations`;
     const locations = await allQuery(query); // Fetch data using the allQuery helper
-    console.log('Fetched locations:', locations); // Log the result for debugging
     return locations; // Return the array of location objects
   } catch (error) {
     console.error('Error fetching locations:', error.message);
@@ -176,4 +213,4 @@ const getLocations = async () => {
 };
 
 const databaseInstance = new Database();
-module.exports = { databaseInstance, allQuery, runQuery, getLocations};
+module.exports = { databaseInstance, allQuery, runQuery, getQuery, getLocations};
