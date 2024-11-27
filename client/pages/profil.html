@@ -7,17 +7,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./static/styles/global.css">
   <link rel="stylesheet" href="./static/styles/index.css">
+  <link rel="stylesheet" href="./static/styles/profil.css">
   <title>JOE and The Juice</title>
 </head>
 
 <body>
     <ul>
-        <li><div id="uploads-container"></div></li>
-        <li><a href="/" class="active">Home</a></li>
-        <li style="float:right"><a id="nav-profile" href="/login">Log in or sign up</a></li>
-        <li style="float:right"><a href="/locations">Locations</a></li>
-        <li style="float:right"><a href="/menu">Menu</a></li>
-        
+        <!-- Left-aligned tabs -->
+        <div class="left-tabs">
+             <!--<li><div id="uploads-container"></div></li>-->
+          <li><a href="/" class="active">HOME</a></li>
+          <li><a href="/menu">MENU</a></li>
+          <li><a href="/locations">FIND US</a></li>
+        </div>
+        <!-- Right-aligned profile tab -->
+        <div class="right-tabs">
+          <li><a id="nav-profile" href="/login">
+            <i class="fas fa-user-circle"></i> PROFILE
+          </a></li>
+        </div>
       </ul>
     <h1>Profile Management</h1>
     

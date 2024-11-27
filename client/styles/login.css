@@ -1,35 +1,3 @@
-/*global css1*/
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: #f8f8f8;
-  }
-  
-  ul {
-      font-family: Calibri;
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background-color: #f7c1d9;
-      font-size: 2em;
-    }
-
-    li {
-        float: left;
-      } 
-      
-      li a {
-        display: block;
-        color: rgb(41, 41, 41);
-        text-align: center;
-        padding: 14px 16px;
-        text-decoration: none;
-      }
-      li img{
-        display: block;
-        width: 65px;
-      }
 
 /*login form css*/
 .center {

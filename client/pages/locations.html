@@ -13,15 +13,27 @@
 
 <body>
   <ul>
-    <li><a href="/">Home</a></li>
-    <li style="float:right" class="active"><a href="/locations">Locations</a></li>
-    <li style="float:right"><a href="/menu">Menu</a></li>
+    <!-- Left-aligned tabs -->
+    <div class="left-tabs">
+         <!--<li><div id="uploads-container"></div></li>-->
+      <li><a href="/" class="active">HOME</a></li>
+      <li><a href="/menu">MENU</a></li>
+      <li><a href="/locations">FIND US</a></li>
+    
+    </div>
+    <!-- Right-aligned profile tab -->
+    <div class="right-tabs">
+      <li><a id="nav-profile" href="/login">
+        <i class="fas fa-user-circle"></i> PROFILE
+      </a></li>
+    </div>
   </ul>
 
   <div id="mapContainer">
     <div id="map" style="height: 500px; flex: 3;"></div>
     <div id="addressOverview" class="scrollable-box">
-      <h3>Butikker</h3>
+      <h3>LOOKING FOR A JOE?</h3>
+      <H4>FIND A STORE NEAR YOU</H4>
       <ul id="addressList"></ul>
     </div>
   </div>
@@ -40,6 +52,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="./static/scripts/location.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mapbox/polyline@1.1.1/src/polyline.min.js"></script>
+<script src="./static/scripts/index.js"></script>
 
 
 </html>

@@ -4,13 +4,12 @@ body {
     overflow-x: hidden;
 }
 
-
 /* Split View Layout */
 .split-container {
     display: flex;
     min-height: 100vh;
 }
-
+/*LEFT SIDE STYLING*/
 .left-side {
     flex: 1;
     background-color: #f8f8f8;
@@ -18,12 +17,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-.right-side {
-    flex: 1;
-    padding: 2rem;
-    background-color: white;
 }
 
 /* Hero Section */
@@ -74,32 +67,106 @@ body {
     width: 250px;
 }
 
-/* Project Info Styles */
+/* Right Side Styling */
+
+/* Right Side Styling */
+.right-side {
+    flex: 1;
+    padding: 1rem; /* Reduced padding */
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* Project Info Container */
 .project-info {
-    max-width: 600px;
+    max-width: 500px;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #f09bc1; /* Subtle pink border */
+    border-radius: 10px;
+    padding: 1.5rem; /* Reduced padding */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Reduced gap between sections */
 }
 
+/* Headings */
 .project-info h2 {
-    color: var(--joe-pink);
-    margin-bottom: 1.5rem;
+    color: #f09bc1; /* Signature pink */
+    font-size: 1.8rem; /* Slightly smaller font */
+    margin-bottom: 0.5rem; /* Reduced bottom margin */
+    text-align: center;
+    font-weight: bold;
 }
 
+.project-info h3 {
+    font-size: 1.2rem; /* Smaller font */
+    color: #333;
+    margin: 0;
+    text-align: left;
+    border-bottom: 1px solid #f09bc1; /* Thinner underline */
+    padding-bottom: 0.3rem; /* Reduced padding */
+    margin-bottom: 0.5rem; /* Reduced spacing below */
+}
+
+/* Paragraph Styling */
 .project-info p {
-    line-height: 1.6;
+    line-height: 1.5; /* Slightly reduced line height */
     color: #666;
-    margin-bottom: 1rem;
+    font-size: 0.9rem; /* Slightly smaller font */
+    margin: 0 0 1rem; /* Reduced bottom margin */
+    text-align: justify;
 }
 
+/* List Styling */
 .project-info ul {
-    font-size: large;
-    background-color: white;
-    padding-left: 30px;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    gap: 0.5rem; /* Reduced space between items */
 }
 
+.project-info ul li {
+    background-color: #fdeef4; /* Softer pink background */
+    border-radius: 5px;
+    padding: 0.5rem 0.8rem; /* Reduced padding */
+    color: #333;
+    font-size: 0.9rem; /* Smaller font */
+    display: flex;
+    align-items: center;
+    text-align: left;
+    font-weight: normal;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Slight shadow */
+}
 
+/* Custom Bullet Point */
 .project-info ul li:before {
-    content: "•";
-    color: #f09bc1;
-    position: relative;
-    left: -20px;
+    content: "•"; /* Custom bullet */
+    color: #f09bc1; /* Signature pink */
+    font-size: 1rem; /* Smaller bullet */
+    margin-right: 5px; /* Reduced spacing */
+}
+
+/* Button Styling */
+.project-info button {
+    padding: 10px 20px; /* Reduced padding */
+    background-color: #f09bc1;
+    color: white;
+    font-size: 0.9rem; /* Smaller font */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: center;
+    margin-top: 1rem; /* Reduced margin */
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.project-info button:hover {
+    background-color: #d77a9c; /* Slightly darker pink */
+    transform: translateY(-2px); /* Subtle lift effect */
 }

@@ -48,10 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const navProfile = document.getElementById('nav-profile');
   
   if (userIsLoggedIn()) {
-    navProfile.innerText = 'Profile'; // Ændr teksten
+    navProfile.innerText = 'PROFILE'; // Ændr teksten
     navProfile.href = '/profile';    // Ændr linket
   } else {
-    navProfile.innerText = 'Log in or sign up';
+    navProfile.innerText = 'LOGIN / SIGN UP';
     navProfile.href = '/login';
   }
 });

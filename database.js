@@ -183,7 +183,7 @@ class Database {
 
   
 }
-async function upload(file) {
+/*async function upload(file) {
   const uploadOptions = {
     folder: "JoeProject",
     public_id: path.basename(file, path.extname(file)),
@@ -216,7 +216,7 @@ async function upload(file) {
     console.error(error);
   }
 }
-upload("https://cdn.prod.website-files.com/5cb303852da2ad609e57122e/6655c0b1a45b36bc9cb18a24_Tunacado-1.png"); 
+upload("https://cdn.prod.website-files.com/5cb303852da2ad609e57122e/6655c0b1a45b36bc9cb18a24_Tunacado-1.png"); */
 
 const getLocations = async () => {
   try {

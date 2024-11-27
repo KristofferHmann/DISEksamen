@@ -12,13 +12,20 @@
       
       <body>
         <ul>
-          <li><div id="uploads-container"></div></li>
-          <li><a href="/" class="active">Home</a></li>
-      
-          <li style="float:right"><a href="/locations">Locations</a></li>
-          <li style="float:right"><a href="/menu">Menu</a></li>
-          <li style="float:right"><a href="/login">Log in or sign up</a></li>
-        </ul>
+            <!-- Left-aligned tabs -->
+            <div class="left-tabs">
+                 <!--<li><div id="uploads-container"></div></li>-->
+              <li><a href="/" class="active">HOME</a></li>
+              <li><a href="/menu">MENU</a></li>
+              <li><a href="/locations">FIND US</a></li>
+            </div>
+            <!-- Right-aligned profile tab -->
+            <div class="right-tabs">
+              <li><a id="nav-profile" href="/login">
+                <i class="fas fa-user-circle"></i> PROFILE
+              </a></li>
+            </div>
+          </ul>
         <div class="menu-container">
           <h1>Menu</h1>
   
@@ -86,4 +93,5 @@
           </section>
       </div>
 </body>
+<script src="./static/scripts/index.js"></script>
 </html>

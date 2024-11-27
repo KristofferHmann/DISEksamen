@@ -6,16 +6,25 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/static/styles/login.css">
+  <link rel="stylesheet" href="/static/styles/global.css">  
   <title>JOE and The Juice</title>
 </head>
 
-<body>
-  <ul>
-    <li><div id="uploads-container"></div></li>
-    <li><a href="/">Home</a></li>
-    <li style="float:right" class="active"><a href="/locations">Locations</a></li>
-    <li style="float:right"><a href="/menu">Menu</a></li>
-  </ul>
+<ul>
+  <!-- Left-aligned tabs -->
+  <div class="left-tabs">
+       <!--<li><div id="uploads-container"></div></li>-->
+    <li><a href="/" class="active">HOME</a></li>
+    <li><a href="/menu">MENU</a></li>
+    <li><a href="/locations">FIND US</a></li>
+  </div>
+  <!-- Right-aligned profile tab -->
+  <div class="right-tabs">
+    <li><a id="nav-profile" href="/login">
+      <i class="fas fa-user-circle"></i> PROFILE
+    </a></li>
+  </div>
+</ul>
 
   <div class="center">
     <form id="loginForm" onsubmit="login(event)">
@@ -33,6 +42,7 @@
 
 </body> 
 <script src="./static/scripts/login.js"></script>
+<script src="./static/scripts/index.js"></script>
 <script src="./static/scripts/displayUploads.js"></script>
 
 </html>

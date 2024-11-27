@@ -7,17 +7,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./static/styles/global.css">
   <link rel="stylesheet" href="./static/styles/index.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
   <title>JOE and The Juice</title>
 </head>
 
 <body>
+  
+
   <ul>
-    <li><div id="uploads-container"></div></li>
-    <li><a href="/" class="active">Home</a></li>
-    <li style="float:right"><a id="nav-profile" href="/login">Log in or sign up</a></li>
-    <li style="float:right"><a href="/locations">Locations</a></li>
-    <li style="float:right"><a href="/menu">Menu</a></li>
+    <!-- Left-aligned tabs -->
+    <div class="left-tabs">
+         <!--<li><div id="uploads-container"></div></li>-->
+      <li><a href="/" class="active">HOME</a></li>
+      <li><a href="/menu">MENU</a></li>
+      <li><a href="/locations">FIND US</a></li>
     
+    </div>
+  
+    <!-- Right-aligned profile tab -->
+    <div class="right-tabs">
+      <li><a id="nav-profile" href="/login">
+        <i class="fas fa-user-circle"></i> PROFILE
+      </a></li>
+    </div>
   </ul>
   <div class="split-container">
     <!-- Left Side - Joe & The Juice Content -->
@@ -43,32 +55,25 @@
     <!-- Right Side - Project Information -->
     <div class="right-side">
         <div class="project-info">
-            <h2>Dette Projekt</h2>
-            <p>Dette proejkt demonstrerer en moderne web applikation af Joe & The Juice som system. Projektet kombinerer Joe & The Juices signaturstil med moderne webteknologier.</p>
-            
-            <h3>Tekniske Funktioner:</h3>
-            <ul>
-                <li>PM2 og Nginx</li>
-                <br>
-                <li>Twilio One-Time-Password</li>
-                <br>
-                <li>Sikker brugergodkendelse</li>
-                <br>
-                <li>Oversigt af Joe & The Juice menu</li>
-                <br>
-                <li>Tilmelding af velkomstbrev</li>
-            </ul>
-
-            <p>Applikationen er bygget via:</p>
-            <ul>
-                <li>HTML5 & CSS for sstruktur og stil</li>
-                <br>
-                <li>JavaScript for dynamisk funktionalitet</li>
-                <br>
-                <li>Node.js backend med Express</li>
-                <br>
-                <li>SQLite database til data opbevaring</li>
-            </ul>
+          <h2>Dette Projekt</h2>
+          <p>Dette projekt demonstrerer en moderne web applikation af Joe & The Juice som system. Projektet kombinerer Joe & The Juices signaturstil med moderne webteknologier.</p>
+          
+          <h3>Tekniske Funktioner:</h3>
+       
+            <li>PM2 og Nginx</li>
+            <li>Twilio One-Time-Password</li>
+            <li>Sikker brugergodkendelse</li>
+            <li>Oversigt af Joe & The Juice menu</li>
+            <li>Tilmelding af velkomstbrev</li>
+          </ul>
+      
+          <h3>Applikationen er bygget via:</h3>
+         
+            <li>HTML5 & CSS for struktur og stil</li>
+            <li>JavaScript for dynamisk funktionalitet</li>
+            <li>Node.js backend med Express</li>
+            <li>SQLite database til data opbevaring</li>
+          </ul>
 
             <div style="margin-top: 2rem;">
                 <button onclick="getResponse()">Test Response Time</button>
