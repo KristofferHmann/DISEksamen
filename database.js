@@ -13,8 +13,8 @@ const database = new sqlite3.Database(path.resolve(__dirname, './database/db.sql
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY, // Replace with your Cloudinary API key
-  api_secret: process.env.CLOUDINART_API_SECRET, // Replace with your Cloudinary API secret
+  api_key: process.env.CLOUDINARY_API_KEY, 
+  api_secret: process.env.CLOUDINART_API_SECRET, 
   secure: true,
 });
 
@@ -180,26 +180,43 @@ class Database {
       });
     });
   }
-  async  upload(file) {
-    const uploadOptions = {
-      folder: "JoeProject",
-      public_id:  path.basename(file, path.extname(file)),
-      resource_type: "auto",
-    };
-    try {
-      const result = await cloudinary.uploader.upload(file, uploadOptions);
-      await runQuery(
-        "INSERT INTO uploads (url, datetime, caption) VALUES (?, ?, ?)",
-        [result.secure_url, Date.now(), result.original_filename]
-      );
-      console.log(result);
-      getUploads();
-    } catch (error) {
-      console.error(error);
-    }
-  }
+
   
 }
+async function upload(file) {
+  const uploadOptions = {
+    folder: "JoeProject",
+    public_id: path.basename(file, path.extname(file)),
+    resource_type: "auto",
+  };
+
+  try {
+    // Tjek om filen allerede findes i databasen baseret på URL
+    const existingFile = await runQuery(
+      "SELECT * FROM uploads WHERE url = ?",
+      [file]
+    );
+
+    if (existingFile.length > 0) {
+      console.log(`File with URL ${file} already exists in the database.`);
+      return;
+    }
+
+    // Upload filen til Cloudinary
+    const result = await cloudinary.uploader.upload(file, uploadOptions);
+
+    // Indsæt filoplysninger i databasen
+    await runQuery(
+      "INSERT INTO uploads (url, datetime, caption) VALUES (?, ?, ?)",
+      [result.secure_url, Date.now(), result.original_filename]
+    );
+
+    console.log(result);
+  } catch (error) {
+    console.error(error);
+  }
+}
+upload("https://cdn.prod.website-files.com/5cb303852da2ad609e57122e/6655c0b1a45b36bc9cb18a24_Tunacado-1.png"); 
 
 const getLocations = async () => {
   try {
