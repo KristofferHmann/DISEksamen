@@ -104,9 +104,6 @@ const allQuery = (query, params = []) => {
 };
 
 
-
-
-
 class Database {
   //Lav en bruger
   async signupUser(data) {
@@ -163,7 +160,7 @@ class Database {
   }
   async getUserById(id) {
     return new Promise((resolve, reject) => {
-      const query = `SELECT id, username, email FROM users WHERE id = ?`;
+      const query = `SELECT id, username, email, points FROM users WHERE id = ?`;
       const params = [id];
   
       database.get(query, params, (err, row) => {
@@ -180,10 +177,27 @@ class Database {
       });
     });
   }
-
-  
 }
-/*async function upload(file) {
+
+async function updateUserPoints(userId, pointsWon, description = 'Spin-the-Wheel') {
+  try {
+    // Update the user's points
+    await runQuery('UPDATE users SET points = points + ? WHERE id = ?', [pointsWon, userId]);
+
+    // Log the transaction
+    await runQuery(
+      'INSERT INTO points_transactions (user_id, change, description) VALUES (?, ?, ?)',
+      [userId, pointsWon, description]
+    );
+
+    return { success: true, pointsWon };
+  } catch (error) {
+    console.error('Error updating user points:', error.message);
+    throw error;
+  }
+}
+
+async function uploadImage(file, caption) {
   const uploadOptions = {
     folder: "JoeProject",
     public_id: path.basename(file, path.extname(file)),
@@ -191,33 +205,30 @@ class Database {
   };
 
   try {
-    // Tjek om filen allerede findes i databasen baseret på URL
-    const existingFile = await runQuery(
-      "SELECT * FROM uploads WHERE url = ?",
-      [file]
-    );
+    // Check if the image with the same caption already exists
+    const existingImage = await getQuery("SELECT * FROM uploads WHERE caption = ?", [caption]);
 
-    if (existingFile.length > 0) {
-      console.log(`File with URL ${file} already exists in the database.`);
+    if (existingImage.length > 0) {
+      console.log(`Image with caption "${caption}" already exists.`);
       return;
     }
 
-    // Upload filen til Cloudinary
+    // Upload the image to Cloudinary
     const result = await cloudinary.uploader.upload(file, uploadOptions);
 
-    // Indsæt filoplysninger i databasen
+    // Insert the uploaded image details into the database
     await runQuery(
       "INSERT INTO uploads (url, datetime, caption) VALUES (?, ?, ?)",
-      [result.secure_url, Date.now(), result.original_filename]
+      [result.secure_url, Date.now(), caption]
     );
 
-    console.log(result);
+    console.log(`Image uploaded and stored: ${result.secure_url}`);
   } catch (error) {
-    console.error(error);
+    console.error("Error uploading image:", error);
   }
 }
-upload("https://cdn.prod.website-files.com/5cb303852da2ad609e57122e/6655c0b1a45b36bc9cb18a24_Tunacado-1.png"); */
 
+//location
 const getLocations = async () => {
   try {
     const query = `SELECT * FROM locations`;
@@ -230,4 +241,4 @@ const getLocations = async () => {
 };
 
 const databaseInstance = new Database();
-module.exports = { databaseInstance, allQuery, runQuery, getQuery, getLocations};
+module.exports = { databaseInstance, allQuery, runQuery, getQuery, updateUserPoints, getLocations, cloudinary};

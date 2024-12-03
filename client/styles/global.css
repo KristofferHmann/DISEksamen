@@ -1,23 +1,33 @@
-body {
+/* Fjern standard margin og padding fra body og html */
+html, body {
   margin: 0;
   padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Forhindrer scrolling, når der ikke er behov */
+  font-family: Arial, sans-serif; /* Standard skrifttype */
 }
 
+/* Sørg for, at alt indhold følger box-sizing regler */
+* {
+  box-sizing: border-box;
+}
+
+/* Navbar styling */
 ul {
-  display: flex; /* Use flexbox for layout */
-  justify-content: space-between; /* Push left-tabs and right-tabs to opposite sides */
-  align-items: center; /* Align items vertically */
+  display: flex; /* Brug flexbox til layout */
+  justify-content: space-between; /* Skub left-tabs og right-tabs til hver sin side */
+  align-items: center; /* Juster elementer vertikalt */
   list-style-type: none;
   margin: 0;
-  padding: 0 20px; /* Add horizontal padding */
-  background-color: #f7c1d9; /* Pink background */
+  padding: 0 20px; /* Tilføj horisontal padding */
+  background-color: #f7c1d9; /* Pink baggrund */
   height: 70px;
-  width: 100%; /* Ensures the navbar spans the full width */
+  width: 100%; /* Sørg for, at navbar fylder hele bredden */
 }
 
-/* Remove bullet points and apply consistent spacing */
 ul li {
-  margin: 0 15px; /* Space between items */
+  margin: 0 15px; /* Afstand mellem elementer */
 }
 
 ul li a {
@@ -25,42 +35,64 @@ ul li a {
   color: rgb(41, 41, 41);
   font-size: 16px;
   font-weight: 500;
-  padding: 10px 15px; /* Add padding around links */
+  padding: 10px 15px; /* Tilføj padding rundt om links */
   border-radius: 5px;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Hover effect for links */
 ul li a:hover {
   color: white;
-  background-color: #f09bc1; /* Slightly darker pink */
+  background-color: #f09bc1; /* Mørkere pink ved hover */
 }
 
-/* Active Link */
 .active {
-  font-weight: 700; /* Bold for active tab */
+  font-weight: 700; /* Fed skrift for aktivt faneblad */
   color: white;
   background-color: #f09bc1;
 }
 
-/* Profile Icon */
+/* Profil-ikon */
 #nav-profile {
   display: flex;
   align-items: center;
-  gap: 8px; /* Space between icon and text */
+  gap: 8px; /* Afstand mellem ikon og tekst */
 }
 
 #nav-profile i {
-  font-size: 18px; /* Icon size */
+  font-size: 18px; /* Ikonstørrelse */
 }
 
-/* Flexbox for left and right tabs */
-.left-tabs,
-.right-tabs {
+/* Left-tabs og right-tabs layout */
+.left-tabs, .right-tabs {
   display: flex;
   align-items: center;
 }
 
 .right-tabs {
-  margin-left: auto; /* Push the profile tab to the far right */
+  margin-left: auto; /* Skub profileringsfanen til højre */
+}
+
+/* Logo-container */
+#logo-container {
+  display: flex;
+  align-items: center; /* Centrer billedet vertikalt */
+  justify-content: center; /* Centrer billedet horisontalt */
+  width: 60px; /* Fast bredde */
+  height: 50px; /* Fast højde */
+}
+
+#logo-container img {
+  max-height: 100%; /* Sørg for, at billedet passer i containeren */
+  max-width: 100%; /* Undgå horisontal overflow */
+  object-fit: contain; /* Bevar billedets proportioner */
+}
+#logout-btn i {
+  color: rgb(0, 0, 0) !important;
+}
+
+/* For sider med scrolling */
+.scrollable-container {
+  overflow: auto; /* Tillad scrolling i containeren */
+  width: 100%;
+  height: 100%;
 }

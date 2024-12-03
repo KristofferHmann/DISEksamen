@@ -1,4 +1,4 @@
-async function displayUploads() {
+/*async function displayUploads() {
     try {
       // Fetch data from the API
       const response = await fetch("/api/uploads");
@@ -28,4 +28,4 @@ async function displayUploads() {
   }
   
   // Call the function when the DOM is fully loaded
-  document.addEventListener("DOMContentLoaded", displayUploads);
+  document.addEventListener("DOMContentLoaded", displayUploads);*/

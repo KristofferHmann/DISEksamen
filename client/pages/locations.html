@@ -8,51 +8,54 @@
   <link rel="stylesheet" href="./static/styles/global.css">
   <link rel="stylesheet" href="./static/styles/location.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
   <title>JOE and The Juice</title>
 </head>
 
 <body>
   <ul>
-    <!-- Left-aligned tabs -->
     <div class="left-tabs">
-         <!--<li><div id="uploads-container"></div></li>-->
+        <li><div id="logo-container"></div></li>
       <li><a href="/" class="active">HOME</a></li>
       <li><a href="/menu">MENU</a></li>
+      <li><a href="/spin">SPIN THE WHEEL</a></li>
       <li><a href="/locations">FIND US</a></li>
-    
     </div>
-    <!-- Right-aligned profile tab -->
     <div class="right-tabs">
       <li><a id="nav-profile" href="/login">
         <i class="fas fa-user-circle"></i> PROFILE
       </a></li>
     </div>
   </ul>
+  <div class="scrollable-container">
 
-  <div id="mapContainer">
-    <div id="map" style="height: 500px; flex: 3;"></div>
-    <div id="addressOverview" class="scrollable-box">
-      <h3>LOOKING FOR A JOE?</h3>
-      <H4>FIND A STORE NEAR YOU</H4>
-      <ul id="addressList"></ul>
+  <div class="locations-container">
+    <div class="locations-header">
+      <h1>Find Your Nearest Joe & The Juice</h1>
+      <p>Locate the nearest store and get directions!</p>
+    </div>
+
+    <div class="locations-content">
+      <div id="map" class="map"></div>
+      <div class="locations-sidebar">
+        <h2>Store Locations</h2>
+        <select id="storeDropdown">
+          <option value="" disabled selected>Select a store</option>
+        </select>
+        <button id="generateRoute" disabled>Show Route</button>
+      </div>
+    </div>
+
+    <div id="statusDisplay" class="status-display">
+      <p>Status: <span id="statusText">Idle</span></p>
     </div>
   </div>
-  
-  <div id="controls">
-    <button id="generateRoute" disabled>Vis Rute</button>
   </div>
-  
-  <div id="statusDisplay">
-    Status: <span id="statusText">Idle</span>
-  </div>
-  
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./static/scripts/location.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mapbox/polyline@1.1.1/src/polyline.min.js"></script>
+  <script src="./static/scripts/index.js"></script>
+
 </body>
-
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="./static/scripts/location.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@mapbox/polyline@1.1.1/src/polyline.min.js"></script>
-<script src="./static/scripts/index.js"></script>
-
-
 </html>

@@ -1,17 +1,23 @@
 // Fetch and pre-fill profile data
 document.addEventListener('DOMContentLoaded', async () => {
+    const pointsDisplay = document.getElementById('pointsDisplay');
     try {
-      const response = await fetch('/api/profile', { method: 'GET' });
+      const response = await fetch('/api/profile',
+         { method: 'GET' });
+
       if (response.ok) {
         const user = await response.json();
         document.getElementById('name').value = user.username;
         document.getElementById('email').value = user.email;
-      } else {
-        console.error('Error fetching profile data:', response.status);
+        if (pointsDisplay) {
+            pointsDisplay.textContent = user.points; // Ensure the points are set
+          }
+        } else {
+          console.error('Error fetching profile data:', response.status);
+        }
+      } catch (error) {
+        console.error('Error fetching profile data:', error.message);
       }
-    } catch (error) {
-      console.error('Error fetching profile data:', error.message);
-    }
   });
   
   // Update profile

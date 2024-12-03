@@ -35,4 +35,18 @@ async function login(event) {
     }
   }
 
+  document.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const response = await fetch('/api/uploads?caption=Hjemmeskærm');
+      const images = await response.json();
   
+      if (images.length > 0) {
+        const background = document.querySelector('.background'); // Brug en klasse eller hele body
+        if (background) {
+          background.style.backgroundImage = `url(${images[0].url})`;
+        }
+      }
+    } catch (error) {
+      console.error('Error loading background image:', error.message);
+    }
+  });

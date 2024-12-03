@@ -122,46 +122,57 @@ class LocationRouter {
     }
 
     addMarkers(locations) {
-        const addressList = document.getElementById('addressList');
-    
+        const storeDropdown = document.getElementById('storeDropdown');
+      
         locations.forEach((location, index) => {
-            const lat = Number(location.Latitude);
-            const lon = Number(location.Longitude);
-    
-            if (!this.isValidCoordinate(lat, lon)) {
-                console.error(`Invalid coordinates for location: ${location.Street}`, { lat, lon });
-                return;
-            }
-    
-            // Create a marker for the map
-            const marker = L.marker([lat, lon], { icon: this.addressIcon })
-                .addTo(this.map)
-                .bindPopup(`<strong>${location.Street}</strong><br>${location.City || 'Unknown City'}`);
-    
-            marker.on('click', () => this.handleMarkerClick(marker, { lat, lon }));
-            this.markers.push(marker);
-    
-            // Add to address list
-            const listItem = document.createElement('li');
-            listItem.innerHTML = `
-                <strong>${location.Street}</strong> (${location.City || 'Unknown City'})
-                <button data-index="${index}">Vælg Butik</button>
-            `;
-            addressList.appendChild(listItem);
-    
-            // Add click event to the button
-            listItem.querySelector('button').addEventListener('click', () => {
-                this.selectedDestination = { lat, lon }; // Set selected destination
-                this.updateStatus(`Selected: ${location.Street}`);
-                document.getElementById('generateRoute').disabled = false; // Enable the route button
-            });
+          const lat = Number(location.Latitude);
+          const lon = Number(location.Longitude);
+      
+          if (!this.isValidCoordinate(lat, lon)) {
+            console.error(`Invalid coordinates for location: ${location.Street}`, { lat, lon });
+            return;
+          }
+      
+          // Create a marker for the map
+          const marker = L.marker([lat, lon], { icon: this.addressIcon })
+            .addTo(this.map)
+            .bindPopup(`<strong>${location.Street}</strong><br>${location.City || 'Unknown City'}`);
+      
+          marker.on('click', () => this.handleMarkerClick(marker, { lat, lon }));
+          this.markers.push(marker);
+      
+          // Add an option to the dropdown
+          const option = document.createElement('option');
+          option.value = index;
+          option.textContent = `${location.Street}, ${location.City || 'Unknown City'}`;
+          storeDropdown.appendChild(option);
         });
-    
+      
+        // Handle store selection
+        storeDropdown.addEventListener('change', (e) => {
+          const selectedIndex = e.target.value;
+          const selectedLocation = locations[selectedIndex];
+          const lat = Number(selectedLocation.Latitude);
+          const lon = Number(selectedLocation.Longitude);
+      
+          if (this.isValidCoordinate(lat, lon)) {
+            this.selectedDestination = { lat, lon };
+            this.updateStatus(`Selected: ${selectedLocation.Street}`);
+            document.getElementById('generateRoute').disabled = false; // Enable the route button
+      
+            // Highlight the selected marker
+            const marker = this.markers[selectedIndex];
+            this.resetMarkers();
+            marker.setIcon(this.highlightedAddressIcon);
+            this.map.setView([lat, lon], 15); // Zoom to the selected location
+          }
+        });
+      
         if (this.markers.length > 0) {
-            const group = new L.featureGroup(this.markers);
-            this.map.fitBounds(group.getBounds(), { padding: [50, 50] });
+          const group = new L.featureGroup(this.markers);
+          this.map.fitBounds(group.getBounds(), { padding: [50, 50] });
         }
-    }
+      }
     
 
     handleMarkerClick(marker, coordinates) {

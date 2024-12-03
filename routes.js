@@ -1,8 +1,8 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
-const { databaseInstance } = require('./database.js');
-const { allQuery } = require("./database.js");
-const { runQuery, getQuery } = require("./database.js");
+const { databaseInstance } = require('./database');
+const { allQuery } = require("./database");
+const { runQuery, getQuery, updateUserPoints } = require("./database");
 const router = express.Router();
 const path = require('path');
 require('dotenv').config();
@@ -12,10 +12,12 @@ const twilio = require('twilio');
 const { channel } = require('diagnostics_channel');
 const client = new twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 const nodemailer = require('nodemailer');
-const { authenticateToken } = require('./auth.js');
+const { authenticateToken, authenticateTokenToSpin } = require('./auth.js');
 const cookieParser = require('cookie-parser');
 const { log } = require('util');
 const { getLocations } = require('./database');
+const multer = require('multer');
+const cloudinary = require('./database');
 
 router.use(cookieParser());
 // Nodemailer transporter
@@ -165,7 +167,6 @@ router.post("/login", async (req, res) => {
       secure: process.env.NODE_ENV === 'production', // Set to true in production with HTTPS
       sameSite: 'lax',
       maxAge: 3600000, // 1 time
-
     });
 
     res.json({ message: 'Login successful', token });
@@ -173,6 +174,13 @@ router.post("/login", async (req, res) => {
     console.error('Error during login:', err.message);
     res.status(500).json({ error: 'An error occurred during login.' });
   }
+});
+
+//LOGOUT
+router.post('/logout', (req, res) => {
+  // Clear the token cookie
+  res.clearCookie('token');
+  res.json({ message: 'Logout successful' });
 });
 
 
@@ -240,10 +248,6 @@ router.post('/verifyOtp', async (req, res) => {
   }
 });
 
-
-/*router.get('/profile', authenticateToken, (req, res) => {
-  res.send('Profile page!!!!!!');
-});*/
 router.get('/profile', authenticateToken, (req, res) => {
   res.sendFile(path.join(__dirname, "client/pages", "profil.html"));
 });
@@ -307,13 +311,49 @@ router.delete('/api/profile', authenticateToken, async (req, res) => {
 });
 
 //cloudinary
-router.get("/api/uploads", async (req, res) => {
+router.get('/api/uploads', async (req, res) => {
   try {
-    const uploads = await allQuery("SELECT * FROM uploads");
-    res.status(200).json(uploads); // Send the data as JSON
+    const caption = req.query.caption;
+    const query = caption
+      ? 'SELECT * FROM uploads WHERE caption = ?'
+      : 'SELECT * FROM uploads';
+
+    const uploads = await allQuery(query, caption ? [caption] : []);
+    console.log('Uploads fetched:', uploads); // Debugging log
+    res.status(200).json(uploads); // Send the uploads as JSON response
   } catch (error) {
-    console.error("Error fetching uploads:", error.message);
-    res.status(500).json({ error: "Failed to fetch uploads" });
+    console.error('Error fetching uploads:', error.message);
+    res.status(500).json({ error: 'Failed to fetch uploads' });
+  }
+});
+
+// Multer setup for temporary file storage
+const upload = multer({ storage: multer.memoryStorage() });
+
+router.post('/upload-image', upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+    const result = await cloudinary.uploader.upload_stream({
+      folder: 'joeProject', // Cloudinary folder name
+    }, (error, response) => {
+      if (error) {
+        console.error('Cloudinary upload error:', error);
+        return res.status(500).json({ error: 'Image upload failed' });
+      }
+
+      // Response includes the image URL
+      res.status(200).json({
+        message: 'Image uploaded successfully',
+        imageUrl: response.secure_url, // Save this URL to the menu table
+      });
+    });
+
+    // Optional: You can also update the database with the URL here
+  } catch (error) {
+    console.error('Error uploading image:', error.message);
+    res.status(500).json({ error: 'An error occurred during the image upload' });
   }
 });
 
@@ -369,5 +409,100 @@ router.get('/api/joeJuiceLocations', async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch locations' });
   }
 });
+
+router.get('/spin', authenticateTokenToSpin, (req, res) => {
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+  res.sendFile(path.join(__dirname, "client/pages", "spin.html"));
+});
+
+//spin the wheel
+router.get('/user/:id', (req, res) => {
+  const userId = req.params.id;
+  db.get('SELECT * FROM users WHERE id = ?', [userId], (err, row) => {
+    if (err) {
+      res.status(500).json({ error: 'Failed to retrieve user data' });
+    } else {
+      res.json(row);
+    }
+  });
+});
+
+router.post('/spin', authenticateTokenToSpin, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { pointsWon } = req.body; // Extract pointsWon from the request body
+
+    // Validate pointsWon
+    const validPoints = ['0', '20', '50', '200', '1000'];
+    if (!validPoints.includes(pointsWon.toString())) {
+      return res.status(400).json({ error: 'Invalid points value.' });
+    }
+
+    await updateUserPoints(userId, pointsWon, 'Spin-the-Wheel');
+    res.json({ pointsWon });
+  } catch (error) {
+    console.error('Error handling spin:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.get('/api/menu', async (req, res) => {
+  try {
+    const menuItems = await allQuery('SELECT id, category, name, ingredient, cost, image_url FROM menu');
+    res.json(menuItems);
+  } catch (error) {
+    console.error('Error fetching menu items:', error.message);
+    res.status(500).json({ error: 'Failed to fetch menu items' });
+  }
+});
+
+router.post('/purchase', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id; // User ID from the JWT token
+    const { menuId } = req.body; // Menu item ID sent in the request body
+
+    // Fetch the menu item details
+    const menuItem = await getQuery('SELECT * FROM menu WHERE id = ?', [menuId]);
+    if (!menuItem) {
+      console.log('Menu item fetched:', menuItem);
+      return res.status(404).json({ error: 'Menu item not found' });
+    }
+
+    // Fetch the user's current points
+    const user = await getQuery('SELECT points FROM users WHERE id = ?', [userId]);
+    if (!user) {
+      console.log('User fetched:', user);
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if the user has enough points
+    if (user.points < menuItem.cost) {
+      return res.status(400).json({ error: 'Not enough points to purchase this item' });
+    }
+
+    // Deduct the points from the user
+    await runQuery('UPDATE users SET points = points - ? WHERE id = ?', [menuItem.cost, userId]);
+
+    // Log the transaction
+    await runQuery(
+      'INSERT INTO points_transactions (user_id, change, description) VALUES (?, ?, ?)',
+      [userId, -menuItem.cost, `Purchased ${menuItem.name}`]
+    );
+
+    // Record the purchase
+    await runQuery(
+      'INSERT INTO menu_purchases (user_id, menu_id) VALUES (?, ?)',
+      [userId, menuId]
+    );
+
+    res.json({ message: `Successfully purchased ${menuItem.name}` });
+  } catch (error) {
+    console.error('Error handling purchase:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+
 
 module.exports = router;

@@ -12,6 +12,8 @@ const app = express();
 
 app.use(cors());
 
+app.use(express.static(path.join(__dirname, "client")));
+
 app.use("/static", express.static("client"));
 app.use((req, res, next) => {
   console.log("----- HTTP Request -----");
@@ -26,8 +28,6 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(responseTime())
 app.use('/', router);
-
-
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "client/pages", "index.html"));
