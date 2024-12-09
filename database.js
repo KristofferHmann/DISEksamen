@@ -160,7 +160,7 @@ class Database {
   }
   async getUserById(id) {
     return new Promise((resolve, reject) => {
-      const query = `SELECT id, username, email, points FROM users WHERE id = ?`;
+      const query = `SELECT id, username, email, phonenumber, points FROM users WHERE id = ?`;
       const params = [id];
   
       database.get(query, params, (err, row) => {

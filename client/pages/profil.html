@@ -28,12 +28,31 @@
         </div>
       </ul>
       <h1>User Profile</h1>
-  <p>Points: <span id="pointsDisplay">Loading...</span></p> 
+      <div id="profile-container">
 
+      <div id="points-overview">
+        <h2>Points Overview</h2>
+        <p>Total Points: <span id="pointsDisplay">Loading...</span></p>
+      
+        <h3>Recent Purchases:</h3>
+        <ul id="recentPurchasesList">
+          <li>Loading recent purchases...</li>
+        </ul>
+      
+        <details>
+          <summary>View All Purchases</summary>
+          <ul id="allPurchasesList">
+            <li>Loading all purchases...</li>
+          </ul>
+        </details>
+      </div>
+
+
+      <div id="profile-management">
     <h2>Profile Management</h2>
     
     <div id="profile-edit">
-      <h2>Edit Profile</h2>
+      <h3>Edit Profile</h3>
       <form id="edit-profile-form">
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required />
@@ -50,6 +69,8 @@
       <h2>Delete Profile</h2>
       <button id="delete-profile-button">Delete My Account</button>
       <p id="delete-message"></p>
+    </div>
+      </div>
     </div>
   </body>
 

@@ -1,5 +1,9 @@
 const responseDom = document.getElementById("response");
 
+function discoverMenu() {
+  window.location.href = './menu'; // Redirect to menu.html
+}
+
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {

@@ -37,6 +37,13 @@ ALTER TABLE menu ADD COLUMN image_url VARCHAR(255);
 
 UPDATE menu SET image_url = 'https://res.cloudinary.com/dfaz3ygzy/image/upload/v1732695810/JoeProject/6655c0b1a45b36bc9cb18a24_Tunacado-1.png' WHERE id = 6;
 
+UPDATE menu SET image_url = 'https://res.cloudinary.com/dfaz3ygzy/image/upload/v1733686716/JOEs_Club_wrrfh9.jpg' WHERE id = 5;
+
+UPDATE menu SET image_url = 'https://res.cloudinary.com/dfaz3ygzy/image/upload/v1733686726/kaffe_joe_nzhmrm.jpg' WHERE id = 3;
+
+UPDATE menu SET image_url = 'https://res.cloudinary.com/dfaz3ygzy/image/upload/v1733687029/juice_kfg443.jpg' WHERE id = 2;
+
+UPDATE menu SET image_url = 'https://res.cloudinary.com/dfaz3ygzy/image/upload/v1733687033/protein_shake_bnynw0.jpg' WHERE id = 4;
 
 INSERT INTO uploads (url, caption) VALUES ('https://res.cloudinary.com/dfaz3ygzy/image/upload/v1732404438/JoeProject/joeLogo.svg', 'Logo');
 

@@ -1,23 +1,59 @@
 // Fetch and pre-fill profile data
 document.addEventListener('DOMContentLoaded', async () => {
     const pointsDisplay = document.getElementById('pointsDisplay');
+    const recentPurchasesList = document.getElementById('recentPurchasesList');
+  const allPurchasesList = document.getElementById('allPurchasesList');
+  
     try {
-      const response = await fetch('/api/profile',
-         { method: 'GET' });
-
+      // Fetch user profile data
+      const response = await fetch('/api/profile', { method: 'GET' });
+  
       if (response.ok) {
         const user = await response.json();
+  
+        // Pre-fill profile details
         document.getElementById('name').value = user.username;
         document.getElementById('email').value = user.email;
+  
+        // Update points display
         if (pointsDisplay) {
-            pointsDisplay.textContent = user.points; // Ensure the points are set
-          }
-        } else {
-          console.error('Error fetching profile data:', response.status);
+          pointsDisplay.textContent = user.points; // Ensure the points are set
         }
-      } catch (error) {
-        console.error('Error fetching profile data:', error.message);
+  
+        // Fetch purchased items
+        const purchasesResponse = await fetch('/api/purchases', { method: 'GET' });
+        if (purchasesResponse.ok) {
+          const purchasedItems = await purchasesResponse.json();
+
+            recentPurchasesList.innerHTML = '';
+            allPurchasesList.innerHTML = '';
+  
+              // Show last 3 purchases in the main list
+        purchasedItems.slice(0, 3).forEach((item) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${item.name} - ${item.cost} points`;
+            recentPurchasesList.appendChild(listItem);
+          });
+  
+          // Show all purchases in the dropdown
+          purchasedItems.forEach((item) => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${item.name} - ${item.cost} points`;
+            allPurchasesList.appendChild(listItem);
+          });
+        } else {
+          recentPurchasesList.innerHTML = '<li>Failed to fetch purchases.</li>';
+          allPurchasesList.innerHTML = '<li>Failed to fetch purchases.</li>';
+        }
+      } else {
+        console.error('Error fetching profile data:', response.status);
       }
+    } catch (error) {
+      console.error('Error fetching profile data:', error.message);
+      pointsDisplay.textContent = 'Error loading points.';
+      recentPurchasesList.innerHTML = '<li>Error loading recent purchases.</li>';
+      allPurchasesList.innerHTML = '<li>Error loading all purchases.</li>';
+    }
   });
   
   // Update profile

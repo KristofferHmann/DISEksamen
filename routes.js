@@ -159,7 +159,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password.' });
     }
     // Generate JWT token
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, username: user.username, phoneNumber: user.phonenumber }, JWT_SECRET, { expiresIn: '1h' });
 
     // Set token as a cookie
     res.cookie("token", token, {
@@ -433,7 +433,7 @@ router.post('/spin', authenticateTokenToSpin, async (req, res) => {
     const { pointsWon } = req.body; // Extract pointsWon from the request body
 
     // Validate pointsWon
-    const validPoints = ['0', '20', '50', '200', '1000'];
+    const validPoints = ['0', '20', '50', '0', '200', '1000'];
     if (!validPoints.includes(pointsWon.toString())) {
       return res.status(400).json({ error: 'Invalid points value.' });
     }
@@ -456,7 +456,7 @@ router.get('/api/menu', async (req, res) => {
   }
 });
 
-router.post('/purchase', authenticateToken, async (req, res) => {
+/*router.post('/purchase', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id; // User ID from the JWT token
     const { menuId } = req.body; // Menu item ID sent in the request body
@@ -500,9 +500,87 @@ router.post('/purchase', authenticateToken, async (req, res) => {
     console.error('Error handling purchase:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
+});*/
+
+router.post('/purchaseItems', authenticateToken, async (req, res) => {
+  const userId = req.user.id;
+  const { menuId } = req.body;
+
+  try {
+
+    // Retrieve the user's details
+    const user = await getQuery('SELECT points, phonenumber FROM users WHERE id = ?', [userId]);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const { points: userPoints, phonenumber: fullPhoneNumber } = user;
+
+    // Retrieve the menu item details
+    const menuItem = await getQuery('SELECT name, cost FROM menu WHERE id = ?', [menuId]);
+    if (!menuItem) {
+      return res.status(404).json({ error: 'Menu item not found' });
+    }
+
+    const { name: menuName, cost: menuCost } = menuItem;
+
+    // Check if the user has enough points
+    if (userPoints < menuCost) {
+      return res.status(400).json({ error: 'Not enough points to purchase this item' });
+    }
+
+    // Deduct points from the user
+    await runQuery('UPDATE users SET points = points - ? WHERE id = ?', [menuCost, userId]);
+
+    // Log the transaction
+    await runQuery(
+      'INSERT INTO points_transactions (user_id, change, description) VALUES (?, ?, ?)',
+      [userId, -menuCost, `Purchased ${menuName}`]
+    );
+
+    // Record the purchase
+    await runQuery('INSERT INTO menu_purchases (user_id, menu_id) VALUES (?, ?)', [userId, menuId]);
+
+    // Generate a unique code
+    const code = Math.floor(1000 + Math.random() * 9000);
+
+    // Send the code via Twilio
+    const client = require('twilio')(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+    await client.messages.create({
+      body: `Your code for ${menuName} is ${code}. Redeem it at Joe & the Juice!`,
+      from: process.env.TWILIO_WHATSAPP_NUMBER,
+      to: fullPhoneNumber,
+    });
+
+    res.json({
+      message: `Purchase successful! A code for ${menuName} has been sent to your phone.`,
+      suggestion: 'Find your nearest store at FIND US',
+    });
+  } catch (error) {
+    console.error('Error processing purchase:', error.message);
+    res.status(500).json({ error: 'Failed to process purchase.' });
+  }
 });
 
+router.get('/api/purchases', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
 
+    // Fetch purchased items
+    const purchases = await allQuery(
+      `SELECT menu.name, menu.cost 
+       FROM menu_purchases 
+       INNER JOIN menu ON menu_purchases.menu_id = menu.id 
+       WHERE menu_purchases.user_id = ?`,
+      [userId]
+    );
+
+    res.json(purchases);
+  } catch (error) {
+    console.error('Error fetching purchases:', error.message);
+    res.status(500).json({ error: 'Failed to fetch purchased items.' });
+  }
+});
 
 
 module.exports = router;

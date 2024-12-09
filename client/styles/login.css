@@ -19,12 +19,12 @@
   }
   .center form {
     background-color: white;
-    border: 1px solid #ddd; /* Add a border to form the box */
-    border-radius: 10px; /* Rounded corners */
-    padding: 30px; /* Padding inside the box */
-    width: 300px; /* Fixed width for consistency */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
-    text-align: center; /* Center align content inside the box */
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 30px;
+    width: 300px; /* Keep form width fixed */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
   }
   
   .center h2 {
@@ -33,24 +33,15 @@
     margin-bottom: 20px;
   }
   
-  .center input {
-    width: 300px; /* Fixed width for inputs */
+  .center input,
+  .center button {
+    width: 100%; /* Set width relative to the parent container */
     padding: 10px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
-  }
-  
-  .center button {
-    width: 300px; /* Match input width */
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    background-color: #f7c1d9;
-    color: #303030;
-    font-weight: bold;
-    cursor: pointer;
+    box-sizing: border-box; /* Include padding and border in width calculation */
   }
   
   .center button:hover {

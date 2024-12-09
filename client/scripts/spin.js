@@ -18,23 +18,35 @@ document.addEventListener('DOMContentLoaded', async () => {
     const spinButton = document.getElementById('spinButton');
     const spinResult = document.getElementById('spinResult');
   
-    const segments = ['0', '20', '50', '0', '200', '1000'];
-    const segmentAngle = 360 / segments.length; // Angle per segment
+    const segments = [0, 20, 50, 0, 200, 1000]; 
+    const segmentAngle = 360 / segments.length; 
   
     spinButton.addEventListener('click', async () => {
-      const randomSpin = Math.floor(Math.random() * 360) + 360 * 5; // Randomize spin with multiple full rotations
-      const finalAngle = randomSpin % 360; // Get the stopping angle within 360 degrees
+      const randomSpin = Math.floor(Math.random() * 360) + 360 * 5;
+      const finalAngle = randomSpin % 360; 
   
       wheel.style.transition = 'transform 4s ease-out';
-      wheel.style.transform = `rotate(${randomSpin}deg)`; // Apply spin animation
+      wheel.style.transform = `rotate(${randomSpin}deg)`;
   
       setTimeout(async () => {
-        // Corrected normalized angle calculation
-        const adjustedAngle = (finalAngle + segmentAngle / 2) % 360; // Adjust to align with pointer
-        const winningIndex = Math.floor(adjustedAngle / segmentAngle); // Get the winning segment index
-        const pointsWon = segments[winningIndex]; // Map index to points
+        
+        const normalizedAngle = (360 - finalAngle + segmentAngle / 2) % 360;
+        let winningIndex = Math.floor(normalizedAngle / segmentAngle); 
   
-        console.log({ randomSpin, finalAngle, adjustedAngle, winningIndex, pointsWon }); // Debugging log
+        if (winningIndex >= segments.length) {
+          winningIndex = segments.length - 1;
+        }
+  
+        const pointsWon = segments[winningIndex];
+  
+        console.log({
+          randomSpin,
+          finalAngle,
+          normalizedAngle,
+          winningIndex,
+          pointsWon,
+          segmentAngle,
+        }); // Debugging log
   
         try {
           const response = await fetch('/spin', {
@@ -45,7 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
           if (response.ok) {
             const data = await response.json();
-            spinResult.textContent = `You won ${data.pointsWon} points!`;
+            spinResult.textContent = `You won ${pointsWon} points!`; // Display correct points
           } else {
             const errorData = await response.json();
             spinResult.textContent = errorData.error || 'Error spinning the wheel. Try again.';
@@ -57,4 +69,3 @@ document.addEventListener('DOMContentLoaded', async () => {
       }, 4000); // Wait for the spin animation to complete
     });
   });
-  

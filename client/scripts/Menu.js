@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', async () => {
     const menuContainer = document.querySelector('.menu-container');
+    const modal = document.getElementById('purchase-modal');
+  const purchaseDetails = document.getElementById('purchase-details');
+  const confirmPurchaseButton = document.getElementById('confirm-purchase');
+  const cancelPurchaseButton = document.getElementById('cancel-purchase');
+  let selectedMenuItem = null; // Store the selected menu item for confirmation
   
     try {
       // Fetch menu items from the backend
@@ -40,40 +45,55 @@ document.addEventListener('DOMContentLoaded', async () => {
   
     // Function to attach click listeners to purchase buttons
     function addPurchaseListeners() {
-      const purchaseButtons = document.querySelectorAll('.purchase-button');
-  
-      purchaseButtons.forEach((button) => {
-        button.addEventListener('click', async (e) => {
-          // Check if the user is logged in
-          if (!userIsLoggedIn()) {
-            alert('You need to be logged in to purchase items.');
-            window.location.href = '/login'; // Redirect to login page
-            return; // Stop further execution
-          }
-  
-          // Proceed with the purchase
-          const menuItem = e.target.closest('.menu-item'); // Get the parent menu-item
-          const menuId = menuItem.getAttribute('data-menu-id'); // Get the menu ID
-  
-          try {
-            const response = await fetch('/purchase', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ menuId }),
-            });
-  
-            const data = await response.json();
-  
-            if (response.ok) {
-              alert(data.message); // Show success message
-            } else {
-              alert(data.error); // Show error message
+        const purchaseButtons = document.querySelectorAll('.purchase-button');
+        purchaseButtons.forEach((button) => {
+          button.addEventListener('click', (e) => {
+            if (!userIsLoggedIn()) {
+              alert('You need to be logged in to purchase items.');
+              window.location.href = '/login';
+              return;
             }
-          } catch (error) {
-            console.error('Error processing purchase:', error.message);
-            alert('An error occurred while processing your purchase.');
-          }
+    
+            const menuItem = e.target.closest('.menu-item');
+            selectedMenuItem = {
+              id: menuItem.getAttribute('data-menu-id'),
+              name: menuItem.querySelector('h3').textContent,
+              cost: menuItem.querySelector('.price').textContent.split(' ')[1],
+            };
+    
+            // Show confirmation modal
+            purchaseDetails.textContent = `You are about to purchase ${selectedMenuItem.name} for ${selectedMenuItem.cost} points.`;
+            modal.classList.remove('hidden');
+          });
         });
+      }
+    
+      confirmPurchaseButton.addEventListener('click', async () => {
+        if (!selectedMenuItem) return;
+    
+        try {
+          const response = await fetch('/purchaseItems', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ menuId: selectedMenuItem.id }),
+          });
+    
+          const data = await response.json();
+    
+          if (response.ok) {
+            alert(`${data.message} ${data.suggestion}`);
+            modal.classList.add('hidden');
+          } else {
+            alert(data.error);
+          }
+        } catch (error) {
+          console.error('Error processing purchase:', error.message);
+          alert('An error occurred while processing your purchase.');
+        }
       });
-    }
-  });
+    
+      cancelPurchaseButton.addEventListener('click', () => {
+        modal.classList.add('hidden'); // Close the modal
+        selectedMenuItem = null; // Clear selected item
+      });
+    });
