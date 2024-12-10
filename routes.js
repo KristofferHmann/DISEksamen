@@ -262,7 +262,7 @@ router.get('/profile', authenticateToken, (req, res) => {
   res.sendFile(path.join(__dirname, "client/pages", "profil.html"));
 });
 
-router.get('/menu', authenticateToken, (req, res) => {
+router.get('/menu', (req, res) => {
   res.sendFile(path.join(__dirname, "client/pages", "menu.html"));
 });
 
