@@ -194,7 +194,7 @@ class Database {
 
           try {
             // Decrypt sensitive fields
-            const username = 'Dit nye brugernavn';
+            const username = '';
             
             const email = row.email_iv
               ? decrypt(row.email, row.email_iv)

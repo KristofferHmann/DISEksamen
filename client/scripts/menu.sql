@@ -45,6 +45,8 @@ UPDATE menu SET image_url = 'https://res.cloudinary.com/dfaz3ygzy/image/upload/v
 
 UPDATE menu SET image_url = 'https://res.cloudinary.com/dfaz3ygzy/image/upload/v1733687033/protein_shake_bnynw0.jpg' WHERE id = 4;
 
+UPDATE menu SET image_url = 'https://res.cloudinary.com/dfaz3ygzy/image/upload/v1733838089/foto-joe-and-the-juice-gate-c-paskontrollen_wdip6o.jpg' WHERE id = 1;
+
 INSERT INTO uploads (url, caption) VALUES ('https://res.cloudinary.com/dfaz3ygzy/image/upload/v1732404438/JoeProject/joeLogo.svg', 'Logo');
 
 INSERT INTO uploads (url, caption) VALUES ('https://res.cloudinary.com/dfaz3ygzy/image/upload/v1729758286/cdn-example/joeProducts.webp', 'Hjemmeskærm');
