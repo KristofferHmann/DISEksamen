@@ -13,7 +13,7 @@ ALTER TABLE users ADD COLUMN phonenumber_iv TEXT;
 
 SELECT username FROM users WHERE username = '596a65236ea663259621af077e7c87e9';
 
-DELETE FROM users WHERE id = 3;
+DELETE FROM users
 
 ALTER TABLE users DROP COLUMN username_iv;
 

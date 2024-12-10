@@ -23,7 +23,7 @@ CREATE TABLE menu_purchases (
     FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (menu_id) REFERENCES menu (id)
 );
-
+DELETE FROM points_transactions;
 INSERT INTO menu (category, name, ingredient, cost) VALUES
 ('Combo', 'Combo Name', 'Sandwich, Juice, Coffee', 125),
 ('Drinks', 'Fresh Juice', 'Orange, Apple, Carrot', 45),
