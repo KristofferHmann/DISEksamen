@@ -56,12 +56,6 @@ router.post('/signup', async (req, res) => {
 
     const rowsAffected = await databaseInstance.signupUser(user); // Registrerer brugeren i databasen
 
-     // Fetch the logo URL from the database
-     const logo = await getQuery('SELECT url FROM uploads WHERE caption = ?', ['Logo']);
-     if (!logo) {
-       throw new Error('Logo not found in the database');
-     }
-
     const mailOptions = {
       from: `"JOE Support" <${process.env.EMAIL_USERNAME}>`, // Sender address
       to: user.email,
@@ -86,7 +80,6 @@ The Joe & The Juice Team
 P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
       html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <img src="${logo.url}" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
         
         <h1 style="color: #FF0066; margin-bottom: 20px;">Hey ${user.username}! 🌱</h1>
         
