@@ -6,7 +6,7 @@ const { runQuery, getQuery, updateUserPoints } = require("./database");
 const router = express.Router();
 const path = require('path');
 require('dotenv').config();
-const { hashPassword, verifyPassword, validatePassword } = require('./utils/passwordUtils.js');
+const { hashPassword, verifyPassword, validatePassword, encryptDeterministic, encrypt, decrypt } = require('./utils/passwordUtils.js');
 const JWT_SECRET = process.env.JWT_SECRET || 'default_secret';
 const twilio = require('twilio');
 const { channel } = require('diagnostics_channel');
@@ -52,58 +52,70 @@ router.post('/signup', async (req, res) => {
     }
     //hasher adgangskoden
     user.password = await hashPassword(user.password);
-
     user.created_at = new Date().toISOString(); // Add timeCreated field
+
     const rowsAffected = await databaseInstance.signupUser(user); // Registrerer brugeren i databasen
+
+     // Fetch the logo URL from the database
+     const logo = await getQuery('SELECT url FROM uploads WHERE caption = ?', ['Logo']);
+     if (!logo) {
+       throw new Error('Logo not found in the database');
+     }
 
     const mailOptions = {
       from: `"JOE Support" <${process.env.EMAIL_USERNAME}>`, // Sender address
       to: user.email,
       subject: 'Welcome to JOE!',
-      text: `Hi ${user.username}! We're super excited to have you join the Joe & The Juice family! 
+      text: `Hi ${user.username}! Welcome to the Joe & The Juice family! We're so excited to have you on board! 
 
-Your account is all set up and ready to go. Now you can:
-• Order your favorite juices, shakes, and food for pickup
-• Earn points on every purchase
+Your account is now active, and you're ready to start earning points! Here's what you can do:
+• Spin the Wheel daily to earn points
+• Redeem points for delicious sandwiches, coffee, or juice
+• Claim your rewards at your nearest Joe & The Juice store
 
 
-Pro tip: Try our legendary Tunacado sandwich with a Power Shake for the perfect energy boost!
+Pro tip: Save up your points for our legendary Tunacado sandwich – it's worth every spin!
 
-Got questions? We're here to help! Just reply to this email or visit us in any of our shops.
+Ready to get started? Head over to our menu to browse your reward options.
 
-Stay energized!
+Got questions? We're here for you! Just reply to this email or visit us in any of our shops.
+
+Stay energized and happy spinning!
 The Joe & The Juice Team
 
 P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
       html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <img src="/static/img/joeLogo.svg" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
+        <img src="${logo.url}" alt="Joe & The Juice Logo" style="max-width: 200px; margin: 20px 0;">
         
         <h1 style="color: #FF0066; margin-bottom: 20px;">Hey ${user.username}! 🌱</h1>
         
-        <p style="font-size: 16px; line-height: 1.5; color: #333;">We're super excited to have you join the Joe & The Juice family!</p>
+        <p style="font-size: 16px; line-height: 1.5; color: #333;">Welcome to the Joe & The Juice family! We're so excited to have you on board!</p>
         
-        <p style="font-size: 16px; line-height: 1.5; color: #333;">Your account is all set up and ready to go. Here's what you can do now:</p>
+        <p style="font-size: 16px; line-height: 1.5; color: #333;">Your account is now active, and you’re ready to start earning points! Here's how it works:</p>
         
         <ul style="font-size: 16px; line-height: 1.5; color: #333; margin: 20px 0;">
-          <li>Order your favorite juices, shakes, and food for pickup</li>
-          <li>Track your orders and save your favorites</li>
-        </ul>
+    <li>Spin the Wheel daily to earn points</li>
+    <li>Redeem your points for sandwiches, coffee, or juice</li>
+    <li>Claim your rewards at your nearest Joe & The Juice store</li>
+  </ul>
         
-        <div style="background-color: #FDBFD9; color: #23272A; padding: 20px; border-radius: 8px; margin: 20px 0;">
-          <p style="font-size: 16px; margin: 0; color: #333;">
-            <strong>Pro tip:</strong> Try our legendary Tunacado sandwich with a Power Shake for the perfect energy boost! 💪
-          </p>
-        </div>
+       <div style="background-color: #FDBFD9; color: #23272A; padding: 20px; border-radius: 8px; margin: 20px 0;">
+    <p style="font-size: 16px; margin: 0; color: #333;">
+      <strong>Pro tip:</strong> Save up your points for our legendary Tunacado sandwich – it's worth every spin! 🥪💪
+    </p>
+  </div>
         
-        <p style="font-size: 16px; line-height: 1.5; color: #333;">
-          Got questions? We're here to help! Just reply to this email or visit us in any of our shops.
-        </p>
+       <p style="font-size: 16px; line-height: 1.5; color: #333;">Ready to get started? Head over to our menu to browse your reward options!</p>
+
+       <p style="font-size: 16px; line-height: 1.5; color: #333;">
+    Got questions? We're here for you! Just reply to this email or visit us in any of our shops.
+  </p>
         
-        <p style="font-size: 16px; line-height: 1.5; color: #333;">
-          Stay energized!<br>
-          <strong>The Joe & The Juice Team</strong>
-        </p>
+         <p style="font-size: 16px; line-height: 1.5; color: #333;">
+    Stay energized and happy spinning!<br>
+    <strong>The Joe & The Juice Team</strong>
+  </p>
         
         <p style="font-size: 14px; color: #666; font-style: italic; margin-top: 30px;">
           P.S. Follow us on Instagram <a href="https://instagram.com/joeandthejuice" style="color: #FF0066; text-decoration: none;">@joejuice</a> for daily inspiration and updates!
@@ -120,13 +132,11 @@ P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
       }
     });
 
-
     res.status(201).json({ rowsAffected }); // Sender antallet af påvirkede rækker tilbage
   } catch (err) {
-    res.status(500).send('Server error'); // Sender fejlbesked tilbage hvis noget går galt
+    console.error('Error during signup:', err.message);
+    res.status(500).json({ error: 'An internal server error occurred.' });
   }
-
-  const userData = req.body;
 });
 
 
@@ -143,9 +153,12 @@ router.post("/login", async (req, res) => {
     console.error('Manglende brugernavn eller adgangskode.');
     return res.status(400).send({ message: "Brugernavn og adgangskode er påkrævet" });
   }
+
   try {
-    // Hent bruger fra databasen
-    const user = await databaseInstance.getUserByUsername(username);
+    const encryptedUsername = encryptDeterministic(username);
+    console.log('Encrypted username during login:', encryptedUsername);
+
+    const user = await databaseInstance.getUserByUsername(encryptedUsername);
 
     if (!user) {
       console.error('Ugyldigt brugernavn eller adgangskode.');
@@ -159,7 +172,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password.' });
     }
     // Generate JWT token
-    const token = jwt.sign({ id: user.id, username: user.username, phoneNumber: user.phonenumber }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, { expiresIn: '1h' });
 
     // Set token as a cookie
     res.cookie("token", token, {
@@ -270,32 +283,38 @@ router.put('/api/profile', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   let { email, username } = req.body;
 
-try {
-    // Fetch the current username if not provided
-    if (!username) {
-      const result = await getQuery('SELECT username FROM users WHERE id = ?', [userId]);
-      if (!result) {
-        return res.status(404).send('User not found');
-      }
-      username = result.username; // Use the existing username
+  console.log('Incoming update request:', { userId, email, username }); // Debugging log
+
+  if (!email || !username) {
+    console.error('Missing required fields:', { email, username });
+    return res.status(400).json({ error: 'Email and username are required.' });
+  }
+
+  try {
+    // Check if the new username is already in use by another user
+    const encryptedUsername = encryptDeterministic(username); // Encrypt deterministically to match the stored value
+    const existingUser = await getQuery('SELECT id FROM users WHERE username = ?', [encryptedUsername]);
+    if (existingUser && existingUser.id !== userId) {
+      console.error('Username already in use:', username);
+      return res.status(400).json({ error: 'Username already in use.' });
     }
 
-    // Validate email and username
-    if (!email || typeof email !== 'string') {
-      return res.status(400).send('Invalid email');
-    }
-    if (!username || typeof username !== 'string') {
-      return res.status(400).send('Invalid username');
-    }
-  
-    await runQuery(
-      'UPDATE users SET email = ?, username = ? WHERE id = ?',
-      [email, username, userId]
-    );
-    res.send('Profile updated successfully');
-  } catch (err) {
-    console.error('Error updating profile:', err.message);
-    res.status(500).send('Server error');
+    // Encrypt the new email
+    const { encryptedData: encryptedEmail, iv: emailIv } = encrypt(email);
+
+    // Update the user's details in the database
+    const query = `
+      UPDATE users
+      SET username = ?, email = ?, email_iv = ?
+      WHERE id = ?
+    `;
+    await runQuery(query, [encryptedUsername, encryptedEmail, emailIv, userId]);
+
+    console.log('Profile updated successfully for user:', userId);
+    res.status(200).json({ message: 'Profile updated successfully.' });
+  } catch (error) {
+    console.error('Error updating profile:', error.message);
+    res.status(500).json({ error: 'Failed to update profile.' });
   }
 });
 
@@ -303,6 +322,13 @@ router.delete('/api/profile', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   try {
     await runQuery('DELETE FROM users WHERE id = ?', [userId]);
+
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+
     res.send('Account deleted successfully');
   } catch (err) {
     console.error('Error deleting user:', err.message);
@@ -431,12 +457,13 @@ router.post('/spin', authenticateTokenToSpin, async (req, res) => {
   try {
     const userId = req.user.id;
     const { pointsWon } = req.body; // Extract pointsWon from the request body
+    console.log(`Points received from client: ${pointsWon}`);
 
     // Validate pointsWon
-    const validPoints = ['0', '20', '50', '0', '200', '1000'];
-    if (!validPoints.includes(pointsWon.toString())) {
-      return res.status(400).json({ error: 'Invalid points value.' });
-    }
+    const validPoints = [0, 10, 20, 30, 50, 100];
+if (!validPoints.includes(Number(pointsWon))) {
+  return res.status(400).json({ error: 'Invalid points value.' });
+}
 
     await updateUserPoints(userId, pointsWon, 'Spin-the-Wheel');
     res.json({ pointsWon });
@@ -509,12 +536,15 @@ router.post('/purchaseItems', authenticateToken, async (req, res) => {
   try {
 
     // Retrieve the user's details
-    const user = await getQuery('SELECT points, phonenumber FROM users WHERE id = ?', [userId]);
+    const user = await getQuery('SELECT points, phonenumber, phonenumber_iv FROM users WHERE id = ?', [userId]);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const { points: userPoints, phonenumber: fullPhoneNumber } = user;
+    const { points: userPoints, phonenumber, phonenumber_iv } = user;
+
+    const decryptedPhoneNumber = decrypt(phonenumber, phonenumber_iv);
+    console.log('Decrypted phone number:', decryptedPhoneNumber);
 
     // Retrieve the menu item details
     const menuItem = await getQuery('SELECT name, cost FROM menu WHERE id = ?', [menuId]);
@@ -549,7 +579,7 @@ router.post('/purchaseItems', authenticateToken, async (req, res) => {
     await client.messages.create({
       body: `Your code for ${menuName} is ${code}. Redeem it at Joe & the Juice!`,
       from: process.env.TWILIO_WHATSAPP_NUMBER,
-      to: fullPhoneNumber,
+      to: decryptedPhoneNumber,
     });
 
     res.json({

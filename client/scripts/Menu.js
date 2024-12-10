@@ -19,6 +19,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             <div class="item-details">
               <h3>${item.name}</h3>
               <p>${item.ingredient}</p>
+              </div>
+              <div class="item-actions">
               <span class="price">Cost: ${item.cost} points</span>
               <button class="purchase-button">Purchase</button>
             </div>

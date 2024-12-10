@@ -37,6 +37,7 @@ h1 {
     border-radius: 8px;
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    justify-content: space-between; /* Ensure spacing between image, details, and button */
 }
 
 .menu-item img {
@@ -96,3 +97,25 @@ h1 {
     margin: 5px;
     padding: 10px 20px;
   }
+
+  .purchase-button {
+    background-color: #f7c1d9; /* Pink background */
+    color: #fff; /* White text */
+    border: none; /* Remove border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 10px 20px; /* Padding for better click area */
+    cursor: pointer; /* Pointer cursor */
+    font-size: 14px; /* Adjust font size */
+    font-weight: bold; /* Bold text */
+}
+.purchase-button:hover {
+    background-color: #ff91b4; /* Slightly darker pink on hover */
+}
+
+.item-actions {
+    display: flex;
+    flex-direction: column; /* Stack cost and button vertically */
+    align-items: flex-end; /* Align content to the right */
+    justify-content: center; /* Center the content vertically */
+    gap: 5px; /* Add spacing between the cost and button */
+}

@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 const cloudinary = require('cloudinary').v2;
+const { encrypt, decrypt, encryptDeterministic, decryptDeterministic } = require('./utils/passwordUtils');
+
 const database = new sqlite3.Database(path.resolve(__dirname, './database/db.sqlite'), (err) => {
   if (err) {
     console.error('Fejl ved forbindelse til databasen:', err.message);
@@ -109,14 +111,27 @@ class Database {
   async signupUser(data) {
     return new Promise((resolve, reject) => {
       const { username, password, email, phonenumber, created_at } = data;
-      const query = `INSERT INTO users (username, password, email, phonenumber, created_at) VALUES (@username, @password, @email, @phonenumber, @created_at)`;
-      const params = {
-        '@username': username,
-        '@password': password,
-        '@email': email,
-        '@phonenumber': phonenumber,
-        '@created_at': created_at
-      };
+
+        // Krypter data her
+        const encryptedUsername = encryptDeterministic(username);
+        const { encryptedData: encryptedEmail, iv: emailIv } = encrypt(email);
+        const { encryptedData: encryptedPhone, iv: phoneIv } = encrypt(phonenumber);
+
+      const query = `
+        INSERT INTO users 
+        (username, password, email, phonenumber, email_iv, phonenumber_iv, created_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+      `;
+      const params = [
+        encryptedUsername,
+        password, // Password er allerede hashet
+        encryptedEmail,
+        encryptedPhone,
+        emailIv,
+        phoneIv,
+        created_at,
+      ];
+
       database.run(query, params, function (err) {
         if (err) {
           if (err.message.includes('UNIQUE constraint failed')) {
@@ -134,22 +149,20 @@ class Database {
   }
 
   // Get user by username and password
-  async getUserByUsername(username) {
-    
-      if (typeof username !== "string") {
-        console.error("Invalid input for username:", username);
-        throw new Error("Invalid username input");
-      }
+  async getUserByUsername(encryptedUsername) {
+
     return new Promise((resolve, reject) => {
-      const query = `SELECT id, username, password FROM users WHERE username = ?`;
-      const params = [username];
+      const query = `SELECT id, username, username_iv, password 
+      FROM users 
+      WHERE username = ?`;
+      const params = [encryptedUsername];
 
       database.get(query, params, (err, row) => {
       if (err) {
         console.error("Error fetching user by username", err.message);
         reject(err);
       } else if (!row) {
-        console.log("No user found with username:", username);
+        console.log("No user found with username:", encryptedUsername);
         resolve(null); // Resolve with null if no user is found
       } else {
         console.log("Database query result:", row); // Debugging log
@@ -158,25 +171,55 @@ class Database {
       });
     });
   }
+
   async getUserById(id) {
     return new Promise((resolve, reject) => {
-      const query = `SELECT id, username, email, phonenumber, points FROM users WHERE id = ?`;
-      const params = [id];
+      const query = `
+        SELECT 
+        username,
+        email, email_iv,
+        phonenumber, phonenumber_iv,   
+        points 
+        FROM users 
+        WHERE id = ?
+      `;
   
-      database.get(query, params, (err, row) => {
+      database.get(query, [id], (err, row) => {
         if (err) {
-          console.error("Error fetching user by ID:", err.message);
           reject(err);
         } else if (!row) {
-          console.log("No user found with ID:", id);
           resolve(null);
         } else {
-          console.log("Database query result by ID:", row);
-          resolve(row);
-        }
-      });
-    });
+          console.log('Fetched user data:', row); // Log database row
+
+          try {
+            // Decrypt sensitive fields
+            const username = 'Dit nye brugernavn';
+            
+            const email = row.email_iv
+              ? decrypt(row.email, row.email_iv)
+              : null; // Decrypt only if IV exists
+            const phonenumber = row.phonenumber_iv
+              ? decrypt(row.phonenumber, row.phonenumber_iv)
+              : null; // Decrypt only if IV exists
+
+              console.log("Decrypted username:", username);
+
+          resolve({ 
+            id, 
+            username,
+            email, 
+            phonenumber, 
+            points: row.points });
+        
+    } catch (decryptionError) {
+      console.error('Decryption error:', decryptionError.message);
+      reject(new Error('Failed to decrypt user data.'));
+    }
   }
+});
+});
+}
 }
 
 async function updateUserPoints(userId, pointsWon, description = 'Spin-the-Wheel') {
@@ -196,6 +239,7 @@ async function updateUserPoints(userId, pointsWon, description = 'Spin-the-Wheel
     throw error;
   }
 }
+  
 
 async function uploadImage(file, caption) {
   const uploadOptions = {
@@ -227,6 +271,7 @@ async function uploadImage(file, caption) {
     console.error("Error uploading image:", error);
   }
 }
+  
 
 //location
 const getLocations = async () => {
@@ -239,6 +284,7 @@ const getLocations = async () => {
     throw new Error('Could not fetch locations');
   }
 };
+
 
 const databaseInstance = new Database();
 module.exports = { databaseInstance, allQuery, runQuery, getQuery, updateUserPoints, getLocations, cloudinary};

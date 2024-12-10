@@ -7,8 +7,14 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     points INTEGER NOT NULL DEFAULT 0
 );
+ALTER TABLE users ADD COLUMN username_iv TEXT;
+ALTER TABLE users ADD COLUMN email_iv TEXT;
+ALTER TABLE users ADD COLUMN phonenumber_iv TEXT;
 
+SELECT username FROM users WHERE username = '596a65236ea663259621af077e7c87e9';
 
+DELETE FROM users WHERE id = 3;
 
+ALTER TABLE users DROP COLUMN username_iv;
 
-
+DROP TABLE users;

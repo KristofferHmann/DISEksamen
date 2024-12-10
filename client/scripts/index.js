@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Error loading background image:', error.message);
   }
 });
+
 // async funktion med await
 async function getResponse() {
   // try catch blok

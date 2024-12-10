@@ -1,60 +1,52 @@
 .spin-container {
     text-align: center;
     margin: 50px auto;
-  }
-  
-  .wheel-wrapper {
+}
+
+.wheel-wrapper {
     position: relative;
     width: 300px;
     height: 300px;
     margin: 0 auto;
-  }
-  
-  .wheel {
-    width: 100%;
-    height: 100%;
+}
+
+.wheel {
+    width: 300px;
+    height: 300px;
     border-radius: 50%;
-    border: 5px solid #333;
     position: relative;
     transform-origin: center;
+    background: conic-gradient(
+        #f7c1d9 0deg 30deg,
+        #ffffff 30deg 90deg,
+        #f7c1d9 90deg 150deg,
+        #ffffff 150deg 210deg,
+        #f7c1d9 210deg 270deg,
+        #ffffff 270deg 330deg,
+        #f7c1d9 330deg 360deg
+    );
+    border: 5px solid black; /* Optional border for better visibility */
     overflow: hidden;
     animation: none;
-    border: 2px solid red;
-    
-  }
-  
-  .segment {
+}
+
+.segment-label {
     position: absolute;
     width: 100%;
     height: 100%;
-    transform-origin: center center;
-    clip-path: polygon(50% 50%, 100% 0, 100% 100%);
-   /* border: 25px solid blue;*/
-    transform: rotate(calc(var(--rotate-index) * 60deg));
-  }
-  
-  .segment:nth-child(1) { transform: rotate(0deg); background-color: #f7c1d9; }
-  .segment:nth-child(2) { transform: rotate(60deg); background-color: #ffffff; }
-  .segment:nth-child(3) { transform: rotate(120deg); background-color: #f7c1d9; }
-  .segment:nth-child(4) { transform: rotate(180deg); background-color: #ffffff; }
-  .segment:nth-child(5) { transform: rotate(240deg); background-color: #f7c1d9; }
-  .segment:nth-child(6) { transform: rotate(300deg); background-color: #ffffff; }
-  
-
-  .segment::after {
-    content: attr(data-point); /* Display the prize text */
-    position: absolute;
-    top: 50%; /* Start at the center of the wheel */
-    left: 82%; /* Start at the center of the wheel */
-    transform: translate(58%, -110%) rotate(calc(60deg * var(--rotate-index))); /* Adjust rotation and distance */
-    transform-origin: 50% 50%; /* Rotate around the segment center */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform-origin: center;
+    transform: rotate(var(--rotate)) translateY(-40%);
     font-size: 16px;
     font-weight: bold;
     color: black;
     text-shadow: 1px 1px 2px white;
-  }
+    pointer-events: none; /* Prevent interference with wheel spin */
+}
 
-  .pointer {
+.pointer {
     position: absolute;
     top: 0; /* Position the pointer at the top */
     left: 50%;
@@ -65,8 +57,9 @@
     border-top: 30px solid #ff0000; /* Make the pointer more visible with red color */
     transform: translate(-50%, -50%); /* Center the pointer horizontally */
     z-index: 10; /* Ensure pointer stays on top */
-  }
-  button {
+}
+
+button {
     margin-top: 20px;
     padding: 10px 20px;
     font-size: 16px;
@@ -76,14 +69,14 @@
     cursor: pointer;
     background-color: #007bff;
     color: white;
-  }
-  
-  button:hover {
+}
+
+button:hover {
     background-color: #0056b3;
-  }
-  
-  #spinResult {
+}
+
+#spinResult {
     margin-top: 20px;
     font-size: 18px;
     color: #333;
-  }
+}

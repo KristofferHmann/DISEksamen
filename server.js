@@ -16,12 +16,12 @@ app.use(express.static(path.join(__dirname, "client")));
 
 app.use("/static", express.static("client"));
 app.use((req, res, next) => {
-  console.log("----- HTTP Request -----");
-  console.log(`Method: ${req.method}`); // HTTP Method
-  console.log(`URL: ${req.originalUrl}`); // Requested URL
-  console.log("Headers:", req.headers); // Request Headers
-  console.log(`IP: ${req.ip}`); // IP Address
-  console.log("------------------------");
+  //console.log("----- HTTP Request -----");
+  //console.log(`Method: ${req.method}`); // HTTP Method
+  //console.log(`URL: ${req.originalUrl}`); // Requested URL
+  //console.log("Headers:", req.headers); // Request Headers
+  //console.log(`IP: ${req.ip}`); // IP Address
+  //console.log("------------------------");
   next();
 });
 app.use(cookieParser());

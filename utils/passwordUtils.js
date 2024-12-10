@@ -1,4 +1,10 @@
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+
+// Nøgle og algoritme til symmetrisk kryptering
+const ENCRYPTION_KEY = Buffer.from(process.env.ENCRYPTION_KEY, 'hex');  // Generer en 256-bit nøgle én gang og gem sikkert (fx i en .env-fil)
+const IV_LENGTH = 16; // Initialiseringsvektor længde
+const ALGORITHM = 'aes-256-cbc';
 
 // Hash a password
 async function hashPassword(plainPassword) {
@@ -32,8 +38,68 @@ async function verifyPassword(plainPassword, hashedPassword) {
   console.log("Password match result:", result); // Log the result of bcrypt.compare
   return result;
 }
+
+
+
+//symmetrisk kryptering
+function encryptDeterministic(data) {
+  // Derive a fixed IV based on the plaintext data
+  const iv = crypto.createHash('sha256').update(data.trim()).digest().slice(0, IV_LENGTH);
+  const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+  let encrypted = cipher.update(data.trim(), 'utf-8', 'hex');
+  encrypted += cipher.final('hex');
+  console.log('Encrypting username deterministically:', { data, encrypted });
+  return encrypted; // Return only the encrypted data, as IV is derived
+}
+
+function decryptDeterministic(encryptedData, originalData) {
+  if (!originalData || typeof originalData !== 'string') {
+    throw new Error('Original data is required for deterministic decryption.');
+  }
+  // Derive the IV based on the original plaintext
+  const iv = crypto.createHash('sha256').update(originalData.trim()).digest().slice(0, IV_LENGTH);
+  const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+  let decrypted = decipher.update(encryptedData, 'hex', 'utf-8');
+  decrypted += decipher.final('utf-8');
+  return decrypted;
+}
+
+
+
+function encrypt(data) {
+  const iv = crypto.randomBytes(IV_LENGTH); // Generate a random IV
+  const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
+  let encrypted = cipher.update(data, 'utf-8', 'hex');
+  encrypted += cipher.final('hex');
+  console.log('Encrypting data:', { data, encrypted, iv: iv.toString('hex') });
+  return {
+    encryptedData: encrypted,
+    iv: iv.toString('hex'), // Return IV for storage
+  };
+}
+
+// Symmetric Decryption
+/*function decrypt(encryptedData, iv) {
+  const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, Buffer.from(iv, 'hex'));
+  let decrypted = decipher.update(encryptedData, 'hex', 'utf-8');
+  decrypted += decipher.final('utf-8');
+  return decrypted;
+}*/
+
+function decrypt(encryptedData, iv) {
+  if (!iv) throw new Error('IV is required for decryption.');
+  const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, Buffer.from(iv, 'hex'));
+  let decrypted = decipher.update(encryptedData, 'hex', 'utf-8');
+  decrypted += decipher.final('utf-8');
+  return decrypted;
+}
+
 module.exports = {
   hashPassword,
   verifyPassword,
-  validatePassword
+  validatePassword,
+  encrypt,
+  decrypt,
+  encryptDeterministic,
+  decryptDeterministic,
 };

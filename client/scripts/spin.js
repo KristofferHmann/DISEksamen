@@ -7,19 +7,35 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.location.href = '/login';
         return;
       }
-    } catch (error) {
-      console.error('Error checking login status:', error.message);
-      alert('An error occurred while checking login status. Redirecting to login.');
-      window.location.href = '/login';
-      return;
+    if (!response.ok) {
+      throw new Error('Failed to fetch profile data.');
     }
+    const user = await response.json();
+    console.log('Fetched user profile:', user);
+    // Use user data as needed
+  } catch (error) {
+    console.error('Error checking login status:', error.message);
+    alert('An error occurred while checking login status. Redirecting to login.');
+    window.location.href = '/login';
+  }
   
     const wheel = document.getElementById('wheel');
     const spinButton = document.getElementById('spinButton');
     const spinResult = document.getElementById('spinResult');
   
-    const segments = [0, 20, 50, 0, 200, 1000]; 
+    const segments = [0, 10, 20, 30, 50, 100]; 
     const segmentAngle = 360 / segments.length; 
+
+    segments.forEach((point, index) => {
+        const label = document.createElement('div');
+        label.className = 'segment-label';
+        label.textContent = point; // Assign the point value as text
+
+        const angle = index * segmentAngle; // Calculate the rotation angle for the label
+        label.style.setProperty('--rotate', `${angle}deg`); // Set custom property for rotation
+        
+        wheel.appendChild(label); // Add the label to the wheel
+    });
   
     spinButton.addEventListener('click', async () => {
       const randomSpin = Math.floor(Math.random() * 360) + 360 * 5;
@@ -30,13 +46,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   
       setTimeout(async () => {
         
-        const normalizedAngle = (360 - finalAngle + segmentAngle / 2) % 360;
-        let winningIndex = Math.floor(normalizedAngle / segmentAngle); 
-  
-        if (winningIndex >= segments.length) {
-          winningIndex = segments.length - 1;
-        }
-  
+        const pointerOffset = segmentAngle / 2; // Pointer offset
+        const normalizedAngle = (360 - (finalAngle % 360) + pointerOffset) % 360;
+        const winningIndex = Math.floor(normalizedAngle / segmentAngle);
         const pointsWon = segments[winningIndex];
   
         console.log({
@@ -46,7 +58,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           winningIndex,
           pointsWon,
           segmentAngle,
-        }); // Debugging log
+        });
   
         try {
           const response = await fetch('/spin', {

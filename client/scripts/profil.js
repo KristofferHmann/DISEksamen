@@ -59,8 +59,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Update profile
   document.getElementById('edit-profile-form').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = document.getElementById('name').value;
+    const username = document.getElementById('name').value;
     const email = document.getElementById('email').value;
+
+    console.log('Submitting profile update:', { username, email }); // Debugging log
   
     try {
       const response = await fetch('/api/profile', {
@@ -68,14 +70,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({ username, email }),
       });
   
       if (response.ok) {
         document.getElementById('update-message').innerText = 'Profile updated successfully!';
       } else {
         const error = await response.text();
-        document.getElementById('update-message').innerText = `Error: ${error}`;
+        console.error('Error from server:', error);
+        document.getElementById('update-message').innerText = `Error: ${error.error || 'Failed to update profile.'}`;
       }
     } catch (error) {
       document.getElementById('update-message').innerText = 'Error updating profile.';
@@ -92,7 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('delete-message').innerText = 'Account deleted successfully!';
         setTimeout(() => {
           window.location.href = '/';
-        }, 2000);
+        }, 1000);
       } else {
         const error = await response.text();
         document.getElementById('delete-message').innerText = `Error: ${error}`;
