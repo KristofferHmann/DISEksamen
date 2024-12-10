@@ -262,11 +262,11 @@ router.get('/profile', authenticateToken, (req, res) => {
   res.sendFile(path.join(__dirname, "client/pages", "profil.html"));
 });
 
-router.get('/menu', (req, res) => {
+/*router.get('/menu', (req, res) => {
   const resolvedPath = path.join(__dirname, "client/pages", "menu.html");
   console.log("Resolved path for /menu:", resolvedPath);
   res.sendFile(resolvedPath);
-});
+});**/
 
 router.get('/api/profile', authenticateToken, async (req, res) => {
   const userId = req.user.id; // From token
