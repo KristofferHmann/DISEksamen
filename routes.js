@@ -587,7 +587,7 @@ router.post('/purchaseItems', authenticateToken, async (req, res) => {
 
     res.json({
       message: `Purchase successful! A code for ${menuName} has been sent to your phone.`,
-      suggestion: 'Find your nearest store at FIND US',
+      suggestion: 'Find your nearest store at FIND OS',
     });
   } catch (error) {
     console.error('Error processing purchase:', error.message);
