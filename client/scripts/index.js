@@ -82,7 +82,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (isLoggedIn) {
     // Update profile link
-    navProfile.innerText = 'BRUGER';
+    navProfile.innerText = 'PROFIL';
     navProfile.href = '/profile';
 
     // Add a logout button/icon if not already present
