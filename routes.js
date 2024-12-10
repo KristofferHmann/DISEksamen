@@ -264,7 +264,7 @@ router.get('/profile', authenticateToken, (req, res) => {
 
 router.get('/menu', (req, res) => {
   res.setHeader('Cache-Control', 'no-store, max-age=0');
-  res.sendFile(path.join(__dirname, "client/pages", "menu.html"));
+  res.sendFile(path.join(__dirname, "client/pages", "Menu.html"));
 });
 
 
