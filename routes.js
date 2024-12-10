@@ -169,10 +169,10 @@ router.post("/login", async (req, res) => {
 
     // Set token as a cookie
     res.cookie("token", token, {
-      httpOnly: true, // Prevent client-side JavaScript access
-      secure: true, // Ensure cookies are only sent over HTTPS
-      sameSite: 'lax', // Prevent CSRF attacks
-      maxAge: 3600000, // 1 hour
+      httpOnly: true,
+      secure: true, // Set to true in production with HTTPS
+      sameSite: 'lax',
+      maxAge: 3600000, // 1 time
     });
 
     res.json({ message: 'Login successful', token });
@@ -180,6 +180,10 @@ router.post("/login", async (req, res) => {
     console.error('Error during login:', err.message);
     res.status(500).json({ error: 'An error occurred during login.' });
   }
+});
+
+router.get('/api/auth-status', authenticateToken, (req, res) => {
+  res.status(200).json({ loggedIn: true });
 });
 
 //LOGOUT

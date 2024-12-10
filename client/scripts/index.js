@@ -63,21 +63,24 @@ async function getResponse() {
   }
 }
 
-function userIsLoggedIn() {
-  // Eksempel: Tjek for token i cookies
-  const token = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('token='))
-    ?.split('=')[1];
-  return !!token; // Returner true, hvis token eksisterer
+async function userIsLoggedIn() {
+  try {
+    const response = await fetch('/api/auth-status', { method: 'GET' });
+    return response.ok; // If the server returns a 200 status, the user is logged in
+  } catch (error) {
+    console.error('Error verifying login status:', error);
+    return false;
+  }
 }
 // Når siden loader, ændr navigationen hvis brugeren er logget ind
 // When the page loads, modify the navigation bar based on login state
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const navProfile = document.getElementById('nav-profile');
   const navContainer = document.querySelector('.right-tabs'); // Assuming .right-tabs contains the navigation buttons
 
-  if (userIsLoggedIn()) {
+  const isLoggedIn = await userIsLoggedIn();
+
+  if (isLoggedIn) {
     // Update profile link
     navProfile.innerText = 'PROFILE';
     navProfile.href = '/profile';

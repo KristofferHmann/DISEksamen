@@ -37,20 +37,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   
     // Function to check if the user is logged in
-    function userIsLoggedIn() {
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('token='))
-        ?.split('=')[1];
-      return !!token; // Return true if the token exists
-    }
+    async function userIsLoggedIn() {
+        try {
+          const response = await fetch('/api/auth-status', { method: 'GET' });
+          return response.ok; // If the server returns a 200 status, the user is logged in
+        } catch (error) {
+          console.error('Error verifying login status:', error);
+          return false;
+        }
+      }
   
     // Function to attach click listeners to purchase buttons
     function addPurchaseListeners() {
         const purchaseButtons = document.querySelectorAll('.purchase-button');
         purchaseButtons.forEach((button) => {
-          button.addEventListener('click', (e) => {
-            if (!userIsLoggedIn()) {
+          button.addEventListener('click', async (e) => {
+            const loggedIn = await userIsLoggedIn();
+            if (!loggedIn) {
               alert('You need to be logged in to purchase items.');
               window.location.href = '/login';
               return;
