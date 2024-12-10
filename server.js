@@ -46,9 +46,6 @@ app.get("/cookie", (req, res) => {
   res.send("Cookie set");
 });
 
-/*app.get("/menu", (req, res) => {
-  res.sendFile(path.join(__dirname, "client/pages", "menu.html"));
-});*/
 
 app.listen(3000, () => {
   console.log("Server listening on port 3000");

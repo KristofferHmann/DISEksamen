@@ -263,10 +263,10 @@ router.get('/profile', authenticateToken, (req, res) => {
 });
 
 router.get('/menu', (req, res) => {
-  const resolvedPath = path.join(__dirname, "client/pages", "menu.html");
-  console.log("Resolved path for /menu:", resolvedPath);
-  res.sendFile(resolvedPath);
+  res.setHeader('Cache-Control', 'no-store, max-age=0');
+  res.sendFile(path.join(__dirname, "client/pages", "Menu.html"));
 });
+
 
 router.get('/api/profile', authenticateToken, async (req, res) => {
   const userId = req.user.id; // From token
