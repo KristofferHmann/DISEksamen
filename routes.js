@@ -149,7 +149,7 @@ router.post("/login", async (req, res) => {
 
   try {
     const encryptedUsername = encryptDeterministic(username);
-    console.log('Encrypted username during login:', encryptedUsername);
+    
 
     const user = await databaseInstance.getUserByUsername(encryptedUsername);
 
@@ -286,7 +286,7 @@ router.put('/api/profile', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   let { email, username } = req.body;
 
-  console.log('Incoming update request:', { userId, email, username }); // Debugging log
+  
 
   if (!email || !username) {
     console.error('Missing required fields:', { email, username });
@@ -313,7 +313,7 @@ router.put('/api/profile', authenticateToken, async (req, res) => {
     `;
     await runQuery(query, [encryptedUsername, encryptedEmail, emailIv, userId]);
 
-    console.log('Profile updated successfully for user:', userId);
+   
     res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
     console.error('Error updating profile:', error.message);
@@ -348,7 +348,7 @@ router.get('/api/uploads', async (req, res) => {
       : 'SELECT * FROM uploads';
 
     const uploads = await allQuery(query, caption ? [caption] : []);
-    console.log('Uploads fetched:', uploads); // Debugging log
+    
     res.status(200).json(uploads); // Send the uploads as JSON response
   } catch (error) {
     console.error('Error fetching uploads:', error.message);
@@ -460,13 +460,27 @@ router.post('/spin', authenticateTokenToSpin, async (req, res) => {
   try {
     const userId = req.user.id;
     const { pointsWon } = req.body; // Extract pointsWon from the request body
-    console.log(`Points received from client: ${pointsWon}`);
 
     // Validate pointsWon
     const validPoints = [0, 10, 20, 30, 50, 100];
 if (!validPoints.includes(Number(pointsWon))) {
   return res.status(400).json({ error: 'Invalid points value.' });
 }
+
+// Check last spin date
+    const user = await databaseInstance.getUserById(userId);
+
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+
+    if (user.last_spin_date && user.last_spin_date === today) {
+      
+      return res.status(403).json({ error: 'You can only spin the wheel once per day.' });
+    }
+
+    // Update the user's last spin date
+    await databaseInstance.updateLastSpinDate(userId, today);
+
+
 
     await updateUserPoints(userId, pointsWon, 'Spin-the-Wheel');
     res.json({ pointsWon });
@@ -486,52 +500,6 @@ router.get('/api/menu', async (req, res) => {
   }
 });
 
-/*router.post('/purchase', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.id; // User ID from the JWT token
-    const { menuId } = req.body; // Menu item ID sent in the request body
-
-    // Fetch the menu item details
-    const menuItem = await getQuery('SELECT * FROM menu WHERE id = ?', [menuId]);
-    if (!menuItem) {
-      console.log('Menu item fetched:', menuItem);
-      return res.status(404).json({ error: 'Menu item not found' });
-    }
-
-    // Fetch the user's current points
-    const user = await getQuery('SELECT points FROM users WHERE id = ?', [userId]);
-    if (!user) {
-      console.log('User fetched:', user);
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Check if the user has enough points
-    if (user.points < menuItem.cost) {
-      return res.status(400).json({ error: 'Not enough points to purchase this item' });
-    }
-
-    // Deduct the points from the user
-    await runQuery('UPDATE users SET points = points - ? WHERE id = ?', [menuItem.cost, userId]);
-
-    // Log the transaction
-    await runQuery(
-      'INSERT INTO points_transactions (user_id, change, description) VALUES (?, ?, ?)',
-      [userId, -menuItem.cost, `Purchased ${menuItem.name}`]
-    );
-
-    // Record the purchase
-    await runQuery(
-      'INSERT INTO menu_purchases (user_id, menu_id) VALUES (?, ?)',
-      [userId, menuId]
-    );
-
-    res.json({ message: `Successfully purchased ${menuItem.name}` });
-  } catch (error) {
-    console.error('Error handling purchase:', error.message);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});*/
-
 router.post('/purchaseItems', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   const { menuId } = req.body;
@@ -547,7 +515,7 @@ router.post('/purchaseItems', authenticateToken, async (req, res) => {
     const { points: userPoints, phonenumber, phonenumber_iv } = user;
 
     const decryptedPhoneNumber = decrypt(phonenumber, phonenumber_iv);
-    console.log('Decrypted phone number:', decryptedPhoneNumber);
+    
 
     // Retrieve the menu item details
     const menuItem = await getQuery('SELECT name, cost FROM menu WHERE id = ?', [menuId]);

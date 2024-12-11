@@ -36,7 +36,7 @@ class LocationRouter {
             this.updateStatus('Adding markers...');
             this.addMarkers(locations);
 
-            this.updateStatus('Klar. Vælg en destination og click "Vis Rute".');
+            this.updateStatus('Vælg en butik og klik "Vis Rute".');
         } catch (error) {
             this.updateStatus('Initialization error: ' + error.message);
             console.error('Initialization error:', error);
@@ -184,6 +184,7 @@ class LocationRouter {
     }
 
     async generateRoute() {
+        const routeMessageElement = document.getElementById('route-message');
         if (!this.userLocation || !this.selectedDestination) {
             this.updateStatus('Vær sød at vælge en destination først.');
             return;
@@ -200,10 +201,9 @@ class LocationRouter {
                 const distanceKm = (distance / 1000).toFixed(2);
                 const durationMinutes = Math.ceil(duration / 60);
     
-                this.updateStatus(
-                    `Ruten blev succesfuldt vist.<br> Afstand: ${distanceKm} km.<br> Anslåede gå tid: ${durationMinutes} minutter.`
-                );
-            } else {
+                routeMessageElement.innerHTML = 
+            `Den hurtigste rute for dig er blevet fundet.<br> Afstanden er: ${distanceKm} km.<br> Den anslåede gå tid er: ${durationMinutes} minutter.`;
+    }else {
                 throw new Error('No valid route coordinates received.');
             }
         } catch (error) {
@@ -229,7 +229,7 @@ class LocationRouter {
             }
     
             const data = await response.json();
-            console.log('Route API response:', data);
+            
     
             if (!data.routes || data.routes.length === 0) {
                 throw new Error('No routes available in response');
@@ -243,7 +243,7 @@ class LocationRouter {
     
             // Decode the encoded geometry string
             const decodedCoordinates = polyline.decode(route.geometry);
-            console.log('Decoded route coordinates:', decodedCoordinates);
+            
     
             // Extract distance and duration from the route summary
             const distance = route.summary?.distance || 0; // in meters

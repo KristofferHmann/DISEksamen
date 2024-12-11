@@ -11,6 +11,8 @@ ALTER TABLE users ADD COLUMN username_iv TEXT;
 ALTER TABLE users ADD COLUMN email_iv TEXT;
 ALTER TABLE users ADD COLUMN phonenumber_iv TEXT;
 
+ALTER TABLE users ADD COLUMN last_spin_date DATE;
+
 SELECT username FROM users WHERE username = '596a65236ea663259621af077e7c87e9';
 
 DELETE FROM users

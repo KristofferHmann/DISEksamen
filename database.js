@@ -179,7 +179,8 @@ class Database {
         username,
         email, email_iv,
         phonenumber, phonenumber_iv,   
-        points 
+        points, 
+        last_spin_date
         FROM users 
         WHERE id = ?
       `;
@@ -203,14 +204,15 @@ class Database {
               ? decrypt(row.phonenumber, row.phonenumber_iv)
               : null; // Decrypt only if IV exists
 
-              console.log("Decrypted username:", username);
+          
 
           resolve({ 
             id, 
             username,
             email, 
             phonenumber, 
-            points: row.points });
+            points: row.points,
+            last_spin_date: row.last_spin_date });
         
     } catch (decryptionError) {
       console.error('Decryption error:', decryptionError.message);
@@ -220,7 +222,18 @@ class Database {
 });
 });
 }
+async updateLastSpinDate(userId, date) {
+  return new Promise((resolve, reject) => {
+    const query = 'UPDATE users SET last_spin_date = ? WHERE id = ?';
+    database.run(query, [date, userId], (err) => {
+      if (err) reject(err);
+      else resolve();
+    });
+  });
 }
+}
+
+
 
 async function updateUserPoints(userId, pointsWon, description = 'Spin-the-Wheel') {
   try {

@@ -35,7 +35,6 @@ async function verifyPassword(plainPassword, hashedPassword) {
     throw new Error('Both plain password and hashed password are required');
   }
   const result = await bcrypt.compare(plainPassword, hashedPassword);
-  console.log("Password match result:", result); // Log the result of bcrypt.compare
   return result;
 }
 
@@ -48,7 +47,6 @@ function encryptDeterministic(data) {
   const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
   let encrypted = cipher.update(data.trim(), 'utf-8', 'hex');
   encrypted += cipher.final('hex');
-  console.log('Encrypting username deterministically:', { data, encrypted });
   return encrypted; // Return only the encrypted data, as IV is derived
 }
 
@@ -71,7 +69,6 @@ function encrypt(data) {
   const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);
   let encrypted = cipher.update(data, 'utf-8', 'hex');
   encrypted += cipher.final('hex');
-  console.log('Encrypting data:', { data, encrypted, iv: iv.toString('hex') });
   return {
     encryptedData: encrypted,
     iv: iv.toString('hex'), // Return IV for storage

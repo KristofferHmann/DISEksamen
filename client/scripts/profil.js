@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const username = document.getElementById('name').value;
     const email = document.getElementById('email').value;
 
-    console.log('Submitting profile update:', { username, email }); // Debugging log
+   
   
     try {
       const response = await fetch('/api/profile', {

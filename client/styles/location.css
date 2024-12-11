@@ -97,18 +97,23 @@ body {
   cursor: not-allowed;
 }
 
-/* Status display styling */
-.status-display {
+.route-message {
   text-align: center;
-  padding: 15px;
-  background-color: #fdeef4;
-  border-radius: 10px;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  font-size: 16px;
+  line-height: 1.5;
   color: #333;
-}
-
-#statusText {
-  font-weight: bold;
+  border-radius: 8px;
   color: #f09bc1;
+}
+.status-message {
+  text-align: center;
+  margin: 10px 0;
+  font-size: 14px;
+  color: #666;
 }
 
 /* Map styling */
