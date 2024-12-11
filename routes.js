@@ -179,8 +179,13 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get('/api/auth-status', authenticateToken, (req, res) => {
-  res.status(200).json({ loggedIn: true });
+router.get('/api/auth-status', (req, res, next) => {
+  authenticateToken(req, res, () => {
+    if (req.user) {
+      return res.status(200).json({ loggedIn: true });
+    }
+    res.status(200).json({ loggedIn: false });
+  }, true); // Pass true to allow unauthenticated requests
 });
 
 //LOGOUT

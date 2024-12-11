@@ -157,7 +157,7 @@ class LocationRouter {
       
           if (this.isValidCoordinate(lat, lon)) {
             this.selectedDestination = { lat, lon };
-            this.updateStatus(`Selected: ${selectedLocation.Street}`);
+            this.updateStatus(`Valgt butik: ${selectedLocation.Street}`);
             document.getElementById('generateRoute').disabled = false; // Enable the route button
       
             // Highlight the selected marker

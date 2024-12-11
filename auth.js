@@ -3,14 +3,26 @@ require('dotenv').config();
 const path = require("path");
 const JWT_SECRET = process.env.JWT_SECRET;
 
-function authenticateToken(req, res, next) {
+  function authenticateToken(req, res, next, allowUnauthenticated = false) {
     const token = req.cookies.token;
+  
     if (!token) {
-    return res.status(401).send('You must be logged in to access this page');   
+      if (allowUnauthenticated) {
+        req.user = null; // Mark the request as unauthenticated
+        return next();
+      }
+      return res.status(401).send('You must be logged in to access this page');
     }
+  
     jwt.verify(token, JWT_SECRET, (err, user) => {
-      if (err) return res.status(403).send('Invalid token');
-      req.user = user; // Gem brugerdata fra tokenen
+      if (err) {
+        if (allowUnauthenticated) {
+          req.user = null; // Mark the request as unauthenticated
+          return next();
+        }
+        return res.status(403).send('Invalid token');
+      }
+      req.user = user; // Store user data from the token
       next();
     });
   }

@@ -38,14 +38,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   
     // Function to check if the user is logged in
     async function userIsLoggedIn() {
-        try {
-          const response = await fetch('/api/auth-status', { method: 'GET' });
-          return response.ok; // If the server returns a 200 status, the user is logged in
-        } catch (error) {
-          console.error('Error verifying login status:', error);
-          return false;
+      try {
+        const response = await fetch('/api/auth-status', { method: 'GET' });
+    
+        if (!response.ok) {
+          throw new Error('Failed to fetch authentication status');
         }
+    
+        const data = await response.json();
+        return data.loggedIn; // Explicitly check the `loggedIn` status from the response
+      } catch (error) {
+        console.error('Error verifying login status:', error);
+        return false; // Default to not logged in on error
       }
+    }
   
     // Function to attach click listeners to purchase buttons
     function addPurchaseListeners() {
@@ -54,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
           button.addEventListener('click', async (e) => {
             const loggedIn = await userIsLoggedIn();
             if (!loggedIn) {
-              alert('You need to be logged in to purchase items.');
+              alert('Du skal være logget ind for at benytte dine point.');
               window.location.href = '/login';
               return;
             }

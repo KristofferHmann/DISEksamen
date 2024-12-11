@@ -66,10 +66,16 @@ async function getResponse() {
 async function userIsLoggedIn() {
   try {
     const response = await fetch('/api/auth-status', { method: 'GET' });
-    return response.ok; // If the server returns a 200 status, the user is logged in
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch authentication status');
+    }
+
+    const data = await response.json();
+    return data.loggedIn; // Return the actual loggedIn status from the response
   } catch (error) {
     console.error('Error verifying login status:', error);
-    return false;
+    return false; // Default to not logged in on error
   }
 }
 // Når siden loader, ændr navigationen hvis brugeren er logget ind
@@ -81,7 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const isLoggedIn = await userIsLoggedIn();
 
   if (isLoggedIn) {
-    // Update profile link
+    // Display profile link for logged-in users
     navProfile.innerText = 'PROFIL';
     navProfile.href = '/profile';
 
@@ -120,7 +126,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     }
   } else {
-    // Update for logged-out state
+    // Display login/sign-up options for not logged-in users
     navProfile.innerText = 'LOG IN / SIGN UP';
     navProfile.href = '/login';
 
