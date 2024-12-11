@@ -152,7 +152,7 @@ class Database {
   async getUserByUsername(encryptedUsername) {
 
     return new Promise((resolve, reject) => {
-      const query = `SELECT id, username, username_iv, password 
+      const query = `SELECT id, username, password 
       FROM users 
       WHERE username = ?`;
       const params = [encryptedUsername];
