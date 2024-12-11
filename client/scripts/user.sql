@@ -20,3 +20,5 @@ DELETE FROM users
 ALTER TABLE users DROP COLUMN username_iv;
 
 DROP TABLE users;
+
+ALTER TABLE users DROP COLUMN username_iv;
