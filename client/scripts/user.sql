@@ -7,7 +7,6 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     points INTEGER NOT NULL DEFAULT 0
 );
-ALTER TABLE users ADD COLUMN username_iv TEXT;
 ALTER TABLE users ADD COLUMN email_iv TEXT;
 ALTER TABLE users ADD COLUMN phonenumber_iv TEXT;
 

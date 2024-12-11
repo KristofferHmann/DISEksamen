@@ -49,6 +49,7 @@ router.post('/signup', async (req, res) => {
         error: 'Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.',
       });
     }
+    
     //hasher adgangskoden
     user.password = await hashPassword(user.password);
     user.created_at = new Date().toISOString(); // Add timeCreated field

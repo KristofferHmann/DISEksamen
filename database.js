@@ -212,6 +212,7 @@ async updateLastSpinDate(userId, date) {
     });
   });
 }
+
 }
 
 async function updateUserPoints(userId, pointsWon, description = 'Spin-the-Wheel') {

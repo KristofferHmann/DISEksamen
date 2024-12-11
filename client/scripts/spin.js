@@ -10,18 +10,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!response.ok) {
         throw new Error('Failed to fetch profile data.');
       }
+
       const user = await response.json();
-      const lastSpinDate = localStorage.getItem('lastSpinDate');
       const today = new Date().toISOString().split('T')[0];
-  
       const spinButton = document.getElementById('spinButton');
       const spinResult = document.getElementById('spinResult');
   
-      if (lastSpinDate === today) {
+      if (user.last_spin_date === today) {
         spinButton.disabled = true; // Disable spin button
-        spinResult.textContent = 'Du har allerede spillet i dag.';
+        spinResult.textContent = 'You have already spun the wheel today.';
         return;
-      }
+    }
   
       const wheel = document.getElementById('wheel');
       const segments = [0, 10, 20, 30, 50, 100]; 
@@ -61,10 +60,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (spinResponse.ok) {
               const data = await spinResponse.json();
               spinResult.textContent = `You won ${pointsWon} points!`; // Display correct points
-  
-              // Store today's date in localStorage
-              localStorage.setItem('lastSpinDate', today);
               spinButton.disabled = true; // Disable spin button
+              
             } else if (spinResponse.status === 403) {
               const errorData = await spinResponse.json();
               alert(errorData.error); // Notify the user

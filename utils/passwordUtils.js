@@ -75,14 +75,6 @@ function encrypt(data) {
   };
 }
 
-// Symmetric Decryption
-/*function decrypt(encryptedData, iv) {
-  const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, Buffer.from(iv, 'hex'));
-  let decrypted = decipher.update(encryptedData, 'hex', 'utf-8');
-  decrypted += decipher.final('utf-8');
-  return decrypted;
-}*/
-
 function decrypt(encryptedData, iv) {
   if (!iv) throw new Error('IV is required for decryption.');
   const decipher = crypto.createDecipheriv(ALGORITHM, ENCRYPTION_KEY, Buffer.from(iv, 'hex'));
