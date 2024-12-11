@@ -298,6 +298,5 @@ const getLocations = async () => {
   }
 };
 
-
 const databaseInstance = new Database();
 module.exports = { databaseInstance, allQuery, runQuery, getQuery, updateUserPoints, getLocations, cloudinary};
