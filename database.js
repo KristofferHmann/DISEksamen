@@ -297,7 +297,6 @@ const getLocations = async () => {
     throw new Error('Could not fetch locations');
   }
 };
-
-
+// Export the database instance and helper functions
 const databaseInstance = new Database();
 module.exports = { databaseInstance, allQuery, runQuery, getQuery, updateUserPoints, getLocations, cloudinary};
