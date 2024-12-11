@@ -298,5 +298,6 @@ const getLocations = async () => {
   }
 };
 // Export the database instance and helper functions
+
 const databaseInstance = new Database();
 module.exports = { databaseInstance, allQuery, runQuery, getQuery, updateUserPoints, getLocations, cloudinary};
