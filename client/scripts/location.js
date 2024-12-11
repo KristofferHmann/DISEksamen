@@ -211,8 +211,6 @@ class LocationRouter {
             this.updateStatus('Failed to generate route: ' + error.message);
         }
     }
-    
-    
 
     async fetchRoute(start, end) {
         try {
@@ -256,10 +254,6 @@ class LocationRouter {
         }
     }
     
-
-
-
-
     addRouteToMap(coordinates) {
         if (this.currentRoute) {
             this.map.removeLayer(this.currentRoute);
@@ -282,7 +276,6 @@ class LocationRouter {
         this.markers.forEach(marker => marker.setIcon(this.addressIcon));
     }
 
-
     updateStatus(message) {
         const statusElement = document.getElementById('statusText');
         if (statusElement) {
@@ -290,7 +283,6 @@ class LocationRouter {
         }
     }
 }
-
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {

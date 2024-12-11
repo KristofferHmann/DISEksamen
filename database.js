@@ -20,22 +20,6 @@ cloudinary.config({
   secure: true,
 });
 
-// Run SQL script
-/*const runSQLScript = (filename) => {
-  const script = fs.readFileSync(filename, 'utf8');
-  database.exec(script, (err) => {
-    if (err) {
-      console.error(err);
-    } else {
-      console.log("SQL script executed successfully");
-    }
-  });
-}*/
-/*
-database.serialize(() => {
-  runSQLScript('./client/scripts/user.sql');
-});*/
-
 // Kontrollér og opret tabel, hvis den ikke findes
 const ensureTableExists = () => {
   const query = `SELECT name FROM sqlite_master WHERE type='table' AND name='users';`;
@@ -104,7 +88,6 @@ const allQuery = (query, params = []) => {
     });
   });
 };
-
 
 class Database {
   //Lav en bruger
@@ -203,9 +186,7 @@ class Database {
             const phonenumber = row.phonenumber_iv
               ? decrypt(row.phonenumber, row.phonenumber_iv)
               : null; // Decrypt only if IV exists
-
-          
-
+        
           resolve({ 
             id, 
             username,
@@ -233,8 +214,6 @@ async updateLastSpinDate(userId, date) {
 }
 }
 
-
-
 async function updateUserPoints(userId, pointsWon, description = 'Spin-the-Wheel') {
   try {
     // Update the user's points
@@ -252,7 +231,6 @@ async function updateUserPoints(userId, pointsWon, description = 'Spin-the-Wheel
     throw error;
   }
 }
-  
 
 async function uploadImage(file, caption) {
   const uploadOptions = {
@@ -284,7 +262,6 @@ async function uploadImage(file, caption) {
     console.error("Error uploading image:", error);
   }
 }
-  
 
 //location
 const getLocations = async () => {

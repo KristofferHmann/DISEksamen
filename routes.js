@@ -29,7 +29,6 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-
 //signup endpoint
 router.get('/signup/', (req, res) => {
   res.setHeader('Cache-Control', 'no-store, max-age=0');
@@ -132,7 +131,6 @@ P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
   }
 });
 
-
 //login endpoint
 router.get('/login/', (req, res) => {
   res.setHeader('Cache-Control', 'no-store, max-age=0');
@@ -149,8 +147,6 @@ router.post("/login", async (req, res) => {
 
   try {
     const encryptedUsername = encryptDeterministic(username);
-    
-
     const user = await databaseInstance.getUserByUsername(encryptedUsername);
 
     if (!user) {
@@ -193,7 +189,6 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Logout successful' });
 });
 
-
 //Twilio OTP til bruger ved signup
 router.post('/sendOtp', async (req, res) => {
   const { fullPhoneNumber } = req.body;
@@ -223,7 +218,6 @@ router.post('/sendOtp', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
-
 
 //Verfiy OTP
 router.post('/verifyOtp', async (req, res) => {
@@ -267,7 +261,6 @@ router.get('/menu', (req, res) => {
   res.sendFile(path.join(__dirname, "client/pages", "menu.html"));
 });
 
-
 router.get('/api/profile', authenticateToken, async (req, res) => {
   const userId = req.user.id; // From token
   try {
@@ -285,8 +278,6 @@ router.get('/api/profile', authenticateToken, async (req, res) => {
 router.put('/api/profile', authenticateToken, async (req, res) => {
   const userId = req.user.id;
   let { email, username } = req.body;
-
-  
 
   if (!email || !username) {
     console.error('Missing required fields:', { email, username });
@@ -312,7 +303,6 @@ router.put('/api/profile', authenticateToken, async (req, res) => {
       WHERE id = ?
     `;
     await runQuery(query, [encryptedUsername, encryptedEmail, emailIv, userId]);
-
    
     res.status(200).json({ message: 'Profile updated successfully.' });
   } catch (error) {
@@ -513,10 +503,8 @@ router.post('/purchaseItems', authenticateToken, async (req, res) => {
     }
 
     const { points: userPoints, phonenumber, phonenumber_iv } = user;
-
     const decryptedPhoneNumber = decrypt(phonenumber, phonenumber_iv);
     
-
     // Retrieve the menu item details
     const menuItem = await getQuery('SELECT name, cost FROM menu WHERE id = ?', [menuId]);
     if (!menuItem) {

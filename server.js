@@ -7,7 +7,6 @@ const responseTime = require('response-time')
 const router = require('./routes.js');
 require('dotenv').config();
 
-
 const app = express();
 
 app.use(cors());
@@ -45,7 +44,6 @@ app.get("/cookie", (req, res) => {
   res.cookie("taste", "chocolate");
   res.send("Cookie set");
 });
-
 
 app.listen(3000, () => {
   console.log("Server listening on port 3000");

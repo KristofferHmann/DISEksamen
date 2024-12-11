@@ -61,8 +61,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     e.preventDefault();
     const username = document.getElementById('name').value;
     const email = document.getElementById('email').value;
-
-   
   
     try {
       const response = await fetch('/api/profile', {

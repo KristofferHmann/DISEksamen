@@ -11,8 +11,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         throw new Error('Failed to fetch profile data.');
       }
       const user = await response.json();
-      
-  
       const lastSpinDate = localStorage.getItem('lastSpinDate');
       const today = new Date().toISOString().split('T')[0];
   
