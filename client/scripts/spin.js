@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       const response = await fetch('/api/profile', { method: 'GET' });
   
       if (response.status === 401 || response.status === 403) {
-        alert('You have to be logged in to play.');
+        alert('Du skal være logget ind for at kunne spille.');
         window.location.href = '/login';
         return;
       }
@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
       if (user.last_spin_date === today) {
         spinButton.disabled = true; // Disable spin button
-        spinResult.textContent = 'You have already spun the wheel today.';
+        spinResult.textContent = 'Du har allerede spillet i dag. Kom tilbage i morgen!';
         return;
     }
   

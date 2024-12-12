@@ -1,23 +1,15 @@
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username VARCHAR(255) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
+    username VARCHAR(255) NOT NULL UNIQUE, 
+    password VARCHAR(255) NOT NULL,        
+    email VARCHAR(255) NOT NULL UNIQUE,    
+    email_iv TEXT,                         
     phonenumber VARCHAR(255) NOT NULL UNIQUE,
+    phonenumber_plaintext VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    points INTEGER NOT NULL DEFAULT 0
+    points INTEGER NOT NULL DEFAULT 0,
+    last_spin_date DATE
 );
-ALTER TABLE users ADD COLUMN email_iv TEXT;
-ALTER TABLE users ADD COLUMN phonenumber_iv TEXT;
 
-ALTER TABLE users ADD COLUMN last_spin_date DATE;
 
-SELECT username FROM users WHERE username = '596a65236ea663259621af077e7c87e9';
 
-DELETE FROM users
-
-ALTER TABLE users DROP COLUMN username_iv;
-
-DROP TABLE users;
-
-ALTER TABLE users DROP COLUMN username_iv;

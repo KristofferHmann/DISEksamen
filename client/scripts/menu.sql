@@ -50,4 +50,3 @@ UPDATE menu SET image_url = 'https://res.cloudinary.com/dfaz3ygzy/image/upload/v
 INSERT INTO uploads (url, caption) VALUES ('https://res.cloudinary.com/dfaz3ygzy/image/upload/v1732404438/JoeProject/joeLogo.svg', 'Logo');
 
 INSERT INTO uploads (url, caption) VALUES ('https://res.cloudinary.com/dfaz3ygzy/image/upload/v1729758286/cdn-example/joeProducts.webp', 'Hjemmeskærm');
-DELETE FROM uploads

@@ -62,8 +62,6 @@ function decryptDeterministic(encryptedData, originalData) {
   return decrypted;
 }
 
-
-
 function encrypt(data) {
   const iv = crypto.randomBytes(IV_LENGTH); // Generate a random IV
   const cipher = crypto.createCipheriv(ALGORITHM, ENCRYPTION_KEY, iv);

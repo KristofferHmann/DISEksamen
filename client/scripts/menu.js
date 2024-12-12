@@ -21,8 +21,8 @@ document.addEventListener('DOMContentLoaded', async () => {
               <p>${item.ingredient}</p>
               </div>
               <div class="item-actions">
-              <span class="price">Cost: ${item.cost} points</span>
-              <button class="purchase-button">Purchase</button>
+              <span class="price">Pris: ${item.cost} point</span>
+              <button class="purchase-button">Køb</button>
             </div>
           </div>
         `;
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             };
     
             // Show confirmation modal
-            purchaseDetails.textContent = `You are about to purchase ${selectedMenuItem.name} for ${selectedMenuItem.cost} points.`;
+            purchaseDetails.textContent = `Du er ved at købe ${selectedMenuItem.name} for ${selectedMenuItem.cost} point.`;
             modal.classList.remove('hidden');
           });
         });

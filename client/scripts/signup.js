@@ -22,27 +22,40 @@ document.addEventListener('DOMContentLoaded', () => {
             return alert('Indtast venligst dit telefonnummer for at sende OTP.');
         }
         const fullPhoneNumber = `${countryCode}${phonenumber}`;
-        try {
-            // Send OTP via server
-            const response = await fetch('/sendOtp', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({  fullPhoneNumber }),
-            });
 
-            if (response.ok) {
-                alert('OTP sendt til din SMS. Kontroller din besked.');
-                otpModal.style.display = 'block'; // Show OTP modal
-            } else {
-                const error = await response.json();
-                console.error('Error sending OTP:', error);
-                alert('Kunne ikke sende OTP. Prøv venligst igen.');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Der opstod en fejl ved afsendelse af OTP.');
+    try {
+        // Check if phone number already exists
+        const checkPhoneResponse = await fetch('/api/check-phone', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phonenumber: fullPhoneNumber }),
+        });
+
+        if (!checkPhoneResponse.ok) {
+            const errorData = await checkPhoneResponse.json();
+            console.error('Phone number validation failed:', errorData.error);
+            return alert(errorData.error); // Display error if phone number exists
         }
-    });
+        // Send OTP via server
+        const otpResponse = await fetch('/sendOtp', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phonenumber: fullPhoneNumber }),
+        });
+
+        if (otpResponse.ok) {
+            alert('OTP sendt til din SMS. Kontroller din besked.');
+            otpModal.style.display = 'block'; // Show OTP modal
+        } else {
+            const error = await otpResponse.json();
+            console.error('Error sending OTP:', error);
+            alert('Kunne ikke sende OTP. Prøv venligst igen.');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Der opstod en fejl ved afsendelse af OTP.');
+    }
+});
 
     // Close the OTP modal
     closeModal.addEventListener('click', () => {
@@ -104,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const fullPhoneNumber = `${countryCode}${phonenumber}`;
         // Prepare user data for signup
-        userData = { username, password, email, phonenumber: fullPhoneNumber };
+        const userData = { username, password, email, phonenumber: fullPhoneNumber };
 
         try {
             const response = await fetch('/signup', {

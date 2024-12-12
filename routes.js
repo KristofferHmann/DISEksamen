@@ -38,29 +38,41 @@ router.get('/signup/', (req, res) => {
 //post endpoint to handle signup
 router.post('/signup', async (req, res) => {
   try {
-    const user = req.body; // Henter brugerdata fra request body
-
-    //tjekker om adgangskoden er mindst 8 tegn lang
-    if (user.password.length < 8) {
+    const { username, password, email, phonenumber } = req.body;
+    // Check password length and strength
+    if (password.length < 8) {
       return res.status(400).json({ error: 'Password must be at least 8 characters long.' });
     }
-    if (!validatePassword(user.password)) {
+    if (!validatePassword(password)) {
       return res.status(400).json({
-        error: 'Password must be at least 8 characters long, include uppercase and lowercase letters, a number, and a special character.',
+        error: 'Password must include uppercase, lowercase, a number, and a special character.',
       });
     }
-    
-    //hasher adgangskoden
-    user.password = await hashPassword(user.password);
-    user.created_at = new Date().toISOString(); // Add timeCreated field
 
-    const rowsAffected = await databaseInstance.signupUser(user); // Registrerer brugeren i databasen
+    // Check if the phone number already exists
+    const phoneExists = await databaseInstance.checkPhoneNumberExists(phonenumber);
+    if (phoneExists) {
+      return res.status(400).json({ error: 'Phone number already exists.' });
+    }
+
+    // Hash the password
+    const hashedPassword = await hashPassword(password);
+
+    // Save the user in the database with both encrypted and plaintext phone numbers
+    const rowsAffected = await databaseInstance.signupUser({
+      username,
+      password: hashedPassword,
+      email,
+      phonenumber: phonenumber,
+      phonenumber_plaintext: phonenumber,
+      created_at: new Date().toISOString(),
+    });
 
     const mailOptions = {
       from: `"JOE Support" <${process.env.EMAIL_USERNAME}>`, // Sender address
-      to: user.email,
+      to: email,
       subject: 'Welcome to JOE!',
-      text: `Hi ${user.username}! Welcome to the Joe & The Juice family! We're so excited to have you on board! 
+      text: `Hi ${username}! Welcome to the Joe & The Juice family! We're so excited to have you on board! 
 
 Your account is now active, and you're ready to start earning points! Here's what you can do:
 • Spin the Wheel daily to earn points
@@ -81,7 +93,7 @@ P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
       html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         
-        <h1 style="color: #FF0066; margin-bottom: 20px;">Hey ${user.username}! 🌱</h1>
+        <h1 style="color: #FF0066; margin-bottom: 20px;">Hey ${username}! 🌱</h1>
         
         <p style="font-size: 16px; line-height: 1.5; color: #333;">Welcome to the Joe & The Juice family! We're so excited to have you on board!</p>
         
@@ -129,6 +141,26 @@ P.S. Follow us on Instagram @joejuice for daily inspiration and updates!`,
   } catch (err) {
     console.error('Error during signup:', err.message);
     res.status(500).json({ error: 'An internal server error occurred.' });
+  }
+});
+
+router.post('/api/check-phone', async (req, res) => {
+  try {
+    const { phonenumber } = req.body;
+
+    if (!phonenumber) {
+      return res.status(400).json({ error: 'Phone number is required.' });
+    }
+
+    const phoneExists = await databaseInstance.checkPhoneNumberExists(phonenumber);
+
+    if (phoneExists) {
+      return res.status(400).json({ error: 'Phone number already exists.' });
+    }
+    res.status(200).json({ message: 'Phone number is available.' });
+  } catch (err) {
+    console.error('Error checking phone number:', err.message);
+    res.status(500).json({ error: 'Internal server error.' });
   }
 });
 
@@ -197,27 +229,22 @@ router.post('/logout', (req, res) => {
 
 //Twilio OTP til bruger ved signup
 router.post('/sendOtp', async (req, res) => {
-  const { fullPhoneNumber } = req.body;
+  const { phonenumber } = req.body;
 
-  console.log('Phonenumber:', fullPhoneNumber);
 
-  if (!fullPhoneNumber) {
+  if (!phonenumber) {
     return res.status(400).json({ message: 'Phone number is required' });
   }
 
   try {
     const serviceSid = process.env.TWILIO_VERIFY_SERVICE_SID;
 
-    console.log('Sending to:', `sms:${fullPhoneNumber}`);
-    console.log('Using Service SID:', serviceSid);
-
     // Create a verification using Twilio's Verify API
     const verification = await client.verify.v2.services(serviceSid).verifications.create({
-      to: `sms:${fullPhoneNumber}`, // Ensure WhatsApp prefix
+      to: `sms:${phonenumber}`, // Ensure WhatsApp prefix
       channel: 'sms',
     });
 
-    console.log('OTP sent successfully:', verification.sid);
     res.status(200).json({ message: 'OTP sent successfully' });
   } catch (error) {
     console.error('Error sending OTP:', error.message);
@@ -228,9 +255,6 @@ router.post('/sendOtp', async (req, res) => {
 //Verfiy OTP
 router.post('/verifyOtp', async (req, res) => {
   const { fullPhoneNumber, otp } = req.body;
-
-  console.log('Phonenumber:', fullPhoneNumber);
-  console.log('OTP:', otp);
 
   if (!fullPhoneNumber || !otp) {
     return res.status(400).json({ message: 'Phone number and OTP are required' });
@@ -246,10 +270,8 @@ router.post('/verifyOtp', async (req, res) => {
     });
 
     if (verificationCheck.status === 'approved') {
-      console.log('OTP verified successfully:', verificationCheck.sid);
       res.status(200).json({ message: 'OTP verified successfully' });
     } else {
-      console.log('Invalid OTP or verification failed:', verificationCheck.sid);
       res.status(401).json({ message: 'Invalid OTP. Please try again.' });
     }
   } catch (error) {
@@ -501,16 +523,14 @@ router.post('/purchaseItems', authenticateToken, async (req, res) => {
   const { menuId } = req.body;
 
   try {
-
     // Retrieve the user's details
-    const user = await getQuery('SELECT points, phonenumber, phonenumber_iv FROM users WHERE id = ?', [userId]);
+    const user = await getQuery('SELECT points, phonenumber_plaintext FROM users WHERE id = ?', [userId]);
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    const { points: userPoints, phonenumber, phonenumber_iv } = user;
-    const decryptedPhoneNumber = decrypt(phonenumber, phonenumber_iv);
-    
+    const { points: userPoints, phonenumber_plaintext } = user;
+
     // Retrieve the menu item details
     const menuItem = await getQuery('SELECT name, cost FROM menu WHERE id = ?', [menuId]);
     if (!menuItem) {
@@ -521,7 +541,7 @@ router.post('/purchaseItems', authenticateToken, async (req, res) => {
 
     // Check if the user has enough points
     if (userPoints < menuCost) {
-      return res.status(400).json({ error: 'Not enough points to purchase this item' });
+      return res.status(400).json({ error: 'Du har ikke nok point til at købe denne genstand' });
     }
 
     // Deduct points from the user
@@ -544,7 +564,7 @@ router.post('/purchaseItems', authenticateToken, async (req, res) => {
     await client.messages.create({
       body: `Your code for ${menuName} is ${code}. Redeem it at Joe & the Juice!`,
       from: process.env.TWILIO_WHATSAPP_NUMBER,
-      to: decryptedPhoneNumber,
+      to: phonenumber_plaintext,
     });
 
     res.json({

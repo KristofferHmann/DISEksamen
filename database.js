@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 const cloudinary = require('cloudinary').v2;
-const { encrypt, decrypt, encryptDeterministic, decryptDeterministic } = require('./utils/passwordUtils');
+const { encrypt, decrypt, encryptDeterministic } = require('./utils/passwordUtils');
 
 const database = new sqlite3.Database(path.resolve(__dirname, './database/db.sqlite'), (err) => {
   if (err) {
@@ -93,25 +93,25 @@ class Database {
   //Lav en bruger
   async signupUser(data) {
     return new Promise((resolve, reject) => {
-      const { username, password, email, phonenumber, created_at } = data;
+      const { username, password, email, phonenumber, phonenumber_plaintext, created_at } = data;
 
         // Krypter data her
         const encryptedUsername = encryptDeterministic(username);
         const { encryptedData: encryptedEmail, iv: emailIv } = encrypt(email);
-        const { encryptedData: encryptedPhone, iv: phoneIv } = encrypt(phonenumber);
+        const encryptedPhone = encryptDeterministic(phonenumber);
 
       const query = `
         INSERT INTO users 
-        (username, password, email, phonenumber, email_iv, phonenumber_iv, created_at) 
+        (username, password, email, email_iv, phonenumber, phonenumber_plaintext, created_at) 
         VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
       const params = [
         encryptedUsername,
         password, // Password er allerede hashet
         encryptedEmail,
-        encryptedPhone,
         emailIv,
-        phoneIv,
+        encryptedPhone,
+        phonenumber_plaintext, 
         created_at,
       ];
 
@@ -161,7 +161,7 @@ class Database {
         SELECT 
         username,
         email, email_iv,
-        phonenumber, phonenumber_iv,   
+        phonenumber,  
         points, 
         last_spin_date
         FROM users 
@@ -179,13 +179,11 @@ class Database {
           try {
             // Decrypt sensitive fields
             const username = '';
-            
+            const phonenumber = "";
             const email = row.email_iv
               ? decrypt(row.email, row.email_iv)
               : null; // Decrypt only if IV exists
-            const phonenumber = row.phonenumber_iv
-              ? decrypt(row.phonenumber, row.phonenumber_iv)
-              : null; // Decrypt only if IV exists
+           
         
           resolve({ 
             id, 
@@ -203,6 +201,7 @@ class Database {
 });
 });
 }
+
 async updateLastSpinDate(userId, date) {
   return new Promise((resolve, reject) => {
     const query = 'UPDATE users SET last_spin_date = ? WHERE id = ?';
@@ -212,7 +211,26 @@ async updateLastSpinDate(userId, date) {
     });
   });
 }
+async checkPhoneNumberExists(phonenumber) {
+  return new Promise((resolve, reject) => {
+    // Encrypt the phone number deterministically
+    console.log('3Raw phonenumber for encryption:', phonenumber);
+    const encryptedPhone = encryptDeterministic(phonenumber);
+    console.log('3Encrypted phone number for lookup:', encryptedPhone)
 
+    const query = `SELECT COUNT(*) as count FROM users WHERE phonenumber = ?`;
+    const params = [encryptedPhone];
+
+    database.get(query, params, (err, row) => {
+      if (err) {
+        console.error('Error checking phone number existence:', err.message);
+        reject(err);
+      } else {
+        resolve(row.count > 0); // Return true if the phone number exists
+      }
+    });
+  });
+}
 }
 
 async function updateUserPoints(userId, pointsWon, description = 'Spin-the-Wheel') {
