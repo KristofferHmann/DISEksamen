@@ -32,6 +32,7 @@ INSERT INTO menu (category, name, ingredient, cost) VALUES
 ('Food', 'JOEs Club', 'Joes Classic Bread, Avocado, Chicken, Tomato, Vegan Pesto', 75),
 ('Food', 'Tunacado', 'Joes Classic Bread, Avocado, Tomato, Tuna Mousse, Vegan Pesto', 75);
 
+
 ALTER TABLE menu ADD COLUMN image_url VARCHAR(255);
 
 
@@ -50,3 +51,4 @@ UPDATE menu SET image_url = 'https://res.cloudinary.com/dfaz3ygzy/image/upload/v
 INSERT INTO uploads (url, caption) VALUES ('https://res.cloudinary.com/dfaz3ygzy/image/upload/v1732404438/JoeProject/joeLogo.svg', 'Logo');
 
 INSERT INTO uploads (url, caption) VALUES ('https://res.cloudinary.com/dfaz3ygzy/image/upload/v1729758286/cdn-example/joeProducts.webp', 'Hjemmeskærm');
+ DROP TABLE menu;

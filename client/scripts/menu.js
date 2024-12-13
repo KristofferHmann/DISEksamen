@@ -81,14 +81,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     
       confirmPurchaseButton.addEventListener('click', async () => {
         if (!selectedMenuItem) return;
-    
+
         try {
           const response = await fetch('/purchaseItems', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ menuId: selectedMenuItem.id }),
           });
-    
+          
           const data = await response.json();
     
           if (response.ok) {
